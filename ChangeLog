@@ -1,0 +1,605 @@
+
+04/March/2021
+
+Initial instance of package.
+Version 0.0-1.
+
+04/March/2021
+
+Amended the code to allow the permutations to be effected by
+permuting residuals in the case of one-way anova and that of testing
+for a main effect, as well as testing for an interaction
+Introduced a new argument "permtype" specifying which sort
+of permutation (residuals or data) should be used.
+
+Added a vignette providing mathematical expressions for the
+test statistics used.
+
+Incremented the version number.
+Version 0.0-2.
+
+Made a slight tweak to the vignette.
+
+Incremented the version number.
+Version 0.0-3.
+
+09/March/2021
+Corrected a stupid error that I had made in calculating the residuals
+to be permuted.  These must be residuals from null model and I was
+calculating residuals from the full model.
+
+Incremented the version number.
+Version 0.0-4.
+
+15/March/2021
+Amended the code to accept as input ("datObj") a list of numeric vectors
+to be interpreted as K-functions.  Note that in this case "datObj" must
+have an attribute "r" serving as the argument of these K-functions.
+
+Note that these putative K-functions may actually be *scalars* (which
+allows "ordinary" analysis of variance to be conducted).  In this case
+the "r" attribute must also be a scalar (and is arbitrary).
+
+Incremented the version number.
+Version 0.0-5.
+
+21/March/2021
+Added a new version of kanova() (kanova2()) with a substantially
+altered data structure and procedure for effecting the permutations.
+
+Incremented the version number.
+Version 0.0-6.
+
+20/February/2023
+Replace kanova() by kanova2().
+
+Substantially revised and debugged.  Corrected the (essentially backwards)
+indexing of the data.
+
+Added an argument "studentize", defaulting to TRUE, permitting the
+user to *NOT* studentize the test statistic.  This argument was
+added basically to permit the comparison of the test statistic with
+one that can be computed in a simple-minded manner in the case of
+scalar "K functions".
+
+Incremented the version number.
+Version 0.0-7.
+
+26/February/2023
+Adjusted kanova() to use a formula argument.
+
+Incremented the version number.
+Version 0.0-8.
+
+27/February/2023
+Copied kanova.R to kanovaDB.R (making kanovaDB() an internal
+function) and got rid of the studentize argument from kanova().
+WTF does "DB" mean?  Said he on 15/May/2023.  Perhaps "debug"?
+
+Incremented the version number.
+Version 0.0-9.
+
+15/May/2023
+
+Started adjusting the residuals to be "standardised" residuals, in
+the hope that this may enhance exchangeability when the permutation
+test is conducted by means of permuting the residuals.
+
+05/June/2023
+Realised that I need to get my head together on the resulting Studentisation
+variance.  Re-wrote the vignette testStat.ltx.
+
+05/July/2023
+Extensive revision of the kanova function completed.  It is now
+assumed that under the null hypothesis (of no group effect[s]) the
+variance of the K-function associated with a pattern X is equal to
+sigma^2/m where m is the number of points in X.  The calculation
+of the test statistic becomes thereby much cleaner and to some
+extent simpler.  Estimates of K-functions are now calculated as
+weighted means of individual K-functions, with the weights being
+the numbers of points in the associated patterns. See the vignette
+"testStat" for more discussion.
+
+Eliminated the auxiliary functions kanovaEngine(), permDatMat()
+and statPrep().  Added auxiliary functions permSumFns(), resAndFit(),
+testStat(), and wtdMeans().
+
+Incremented the version number.
+Version 0.0-10.
+
+05/July/2023
+Revised initPrep() so that, if desired, the names of the levels of
+the classification factors can be "simplified".  This is effected
+by giving kanova() a new argument "simpNms".
+
+Incremented the version number.
+Version 0.0-11.
+
+25/04/2024
+Modified kanova() so that if "fmla" involves a variable not found
+in "data" then that variable is looked for in parent.frame().  If
+it is still not found, then an error (with an appropriate message)
+is thrown.
+
+Incremented the version number.
+Version 0.0-12.
+
+01/05/2024
+Modified the structure so that the data must *alway* be a hyperframe.
+The response column of this hyperframe is now allowed to be a list of
+numeric vectors (the ostensible summary functions of point patterns),
+and not just a list of point patterns.  Made numerous adjustments
+to kanova.R and initPrep.R.  Got rid of the "simNms" and "iperm"
+arguments to kanova().  Added a "brief=TRUE" argument to kanova();
+if "brief" is FALSE, then a more elaborate object is returned.
+Added an "EffectName" component to the list being returned.
+Made "Tstar" a component of the list being returned, when "brief"
+is FALSE (rather than an attribute created when "keepsimstats"
+is TRUE (and got rid of the argument "keepsimstats").
+
+Added examples to the kanova help file, illustrating the scenario
+in which the response is a list of numeric vectors.  Also an example
+in which these numeric vectors are actually scalars.  (Example taken
+from the Devore7 package; the DESCRIPTION file now suggests Devore7.)
+
+Substantial change, so incremented the minor version number.
+
+05/05/2024
+Corrected a typo (Pseudi |--> Pseudo) in the DESCRIPTION file.
+
+Incremented the version number.
+Version 0.1-1.
+
+17/05/2024
+Corrected major (conceptual!) bug w.r.t. creation of the mean summary
+functions and the studentising variances. Revised the way these means
+and variances are stored --- put them into "data", where they should
+have been put all along!
+
+05/06/2024
+
+The foregoing "Revised the way ..." is not actually correct. The mean summary
+functions and the studentisation have however been corrected.
+
+Fixed various bugs/glitches in testStat().
+
+Incremented the version number.
+Version 0.1-3.
+
+30/06/2024
+
+Revised builds2Khat(), fixing various (major!) glitches.
+Introduced the logical argument do.s2; if this is FALSE, s2
+does not get calculated.  Discontinued use of wtdMeans() --- which
+wasn't being used correctly --- and replaced calls to wtdMeans()
+with calls to builds2Khat(...,do.s2=FALSE)
+
+Fixed a bug in resAndFit() (when "type" was equal to "interac",
+tried to extract Khat from iDat; no such component any longer;
+never should have been there).
+
+04/07/2024
+
+Fixed same bug (!!!) when type was equal to "oneway".
+
+Revised the "testStat" vignette a bit.
+
+19/07/2024
+`
+Further fiddling with the vignette.
+
+Incremented the version number.
+Version 0.1-4.
+
+21/07/2024
+
+Changed email address to my posteo address, in the DESCRIPTION
+file.  Changed "anova" to "Anova" in the title (should be in
+title case).  Wrapped a bit of the kanova() examples in \dontrun{}
+to reduce the time a bit.  (Winbuilder said the toadal time was
+12.14 > 10.00 seconds.  I get only 8.927 seconds in my timing
+calculations. (???) Irrespective of that,  I cut a bit out.
+
+Incremented the version number.
+Version 0.1-5.
+
+25/07/2024
+
+Further tweaks to the vignette.
+
+Incremented the version number.
+Version 0.1-6.
+
+03/08/2024
+Adjusted the vignette structure so that the package would build
+under rhub, by using the "asis" concept from the R.rsp package.
+The vignette directory now holds vignetteForTestStat.pdf and
+vignetteForTestStat.pdf.asis.
+
+Created a directory preVignettes, parellel with vignettes, to
+hold the components (kanova.bib, testStat.ltx) from which the file
+vignetteForTestStat.pdf, in the vignettes directory, can be built.
+
+Incremented the version number.
+Version 0.1-7.
+
+12/08/2024
+Added the function ripVar() to calculate the variance of the
+K-function of a Poisson process.  (Was intending to make use of
+this function in calculating the test statistics, but since the
+procedure is only valid for Poisson processes I decided that this
+was pointless.)
+
+13/08/2024
+Added the arguments "expo" and "rsteps" to kanova() and to
+initPrep().
+
+Adjusted the initPrep() code so that the length of the "r" argument
+to the summary function is rsteps+1 (where rsteps defaults to 128).
+Rather than (in the case of Kest()) being hard-wired to 513.
+Adjusted the code so that the "r" argument consists of values on the
+interval [0,rtop] where rtop is calculated by rmax.rule().  So the
+code now works for all four summary functions, not just for Kest().
+
+Edited the vignette to reflect the current state of affairs.
+
+Added some remarks on fitted values and residuals (mainly via
+reference to the vignette) to the help for kanova().
+
+Changed the syntax for specifying the name of the summary function.
+It is no longer required to be one of "Kest", "Fest", "Gest" or
+"Jest".  This may be a bit, uh, fragile. If left NULL the name
+defaults to "Kest".
+
+Incremented the version number.
+Version 0.1-8.
+
+22/08/2024
+Made "r" an (optional) argument of kanova(), defaulting to NULL.
+If left NULL then the default value of r is created as it was
+previously.
+
+Modified the help accordingly.
+
+Added comments to the help to the effect that users should exercise
+caution in using summary functions other than Kest().
+
+Incremented the version number.
+Version 0.1-9.
+
+30/08/2024
+Added an argument "repairJ" to kanova().  If this is TRUE, then
+NAs that appear in the results from Jest() are replace by values
+obtained by means of interpolating splines (with "method" equal
+to "natural").  This argument is of course ignored unless sumFnNm
+is "Jest".
+
+Incremented the version number.
+Version 0.1-10.
+
+30/08/2024
+The "repairJ" idea (above), using interpolating splines, did not
+work.  Changed the "repair" process to the following:
+
+    * find the largest index imax so that no NAs appear in the
+      summary functions at r[1:imax]
+    * replace "rtop" by r[imax]
+    * recalculate the summary functions
+
+Incremented the version number.
+Version 0.1-11.
+
+01/09/2024
+The whole "repairJ" schtick seems useless.  Backed it out and returned
+to square 1.
+
+Incremented the version number.
+Version 0.1-12.
+
+05/09/2024 to 18/09/2024
+Corrected a *MAJOR* bug/error in  the calculation of the
+variances used in the studentization procedure.
+
+Incremented the version number.
+Version 0.2-1.
+
+23/09/2024
+Results still anomalous.  Realised that (when the levels of B
+differ in variance) permutations to test y ~ A+B vs. y ~ A need to
+be done *within* the levels of B.  Even when it is residuals that
+are being permuted.  Used permtype="data", which accommodates the
+"permute within" requirement.   The results are good.  Need to
+adjust permtype="resids" to do the permutation within the levels
+of B.  This should be do-able.  There is now, however, a problem
+with testing y ~ A*B vs. y ~ A+B which calls for permuting within
+the levels of A *and* within the levels of B which results in all
+T_i^* being equal to T_obs.  So something else needs to be done.
+
+Revised code to permute the residuals within the levels of B,
+Wrote "oEngine.R".
+
+Incremented the version number.
+Version 0.2-2.
+
+28/09/2024
+Experimenting with permuting residuals within the levels of B,
+I found (I think!) problems with permWithin().  After much struggle
+and confusion, and an appeal to R-help, I have revised permWithin().
+
+02/10/2024
+In initPrep.R, coerced the response to be a list. (It *could* be
+a numeric vector, in which case setting the "weight" attribute of
+its entries doesn't work.)
+
+Incremented the version number.
+Version 0.2-3.
+
+03/10/2024
+Fixed egregious bug in the resAndFitCmpnts.R  resAndFit.R  code.
+(Had been useing the K_{i..}-bar values as the fitted values,
+and not the K_{.j.} values as should have been done.
+
+Incremented the version number.
+Version 0.2-4.
+
+03/10/2024 -- 08/10/2024
+Implemented the "permute standardised residuals" idea.  Eliminated
+permtype="resid" which actually makes no sense. (Has same impact
+as permtype="data".)  Added functions:
+
+buildM()
+buildV()
+iEngine()
+teeZed()
+
+made minor adjustments to:
+
+resAndFitCmpts()
+resAndFit()
+oEngine()
+aEngine()
+getWts()
+
+and made major adjustments to
+
+formS2()
+permSumFns() .
+
+Eliminated function formS2j() (its capabilities were incorporated into
+formS2().
+
+Incremented the version number.
+Version 0.2-5.
+
+21/10/2024
+Fixed the stupid bug of effectively getting the "SSE" wrong.  I.e.
+I had been, in some instances at least, using residuals from the
+null model r.t. from the saturated model.
+
+Fixed a bug (confusion of "fitz" --- fitted values from the null model
+--- and "sfitz" --- fitted values from the saturated model.
+
+Incremented the version number.
+Version 0.2-6.
+
+23/10/2024
+Changed name of formS2() to estVar(); added an argument satMod=FALSE.
+Fixed a bug --- the values of "fitz" were not matching up properly
+with the values of "sfitz" and "rez"; sdloc (in permSumFns()) was
+NULL because the names of sd were wrong and not matching up with
+those of fV.  Wrote a new function enlist() to effect the foregoing
+bug fix
+
+23/10/2024
+Changed name of formS2() to estVar(); added an argument satMod=FALSE.
+Fixed a bug --- the values of "fitz" were not matching up properly
+with the values of "sfitz" and "rez"; sdloc (in permSumFns()) was
+NULL because the names of sd were wrong and not matching up with
+those of res and/or fV.  Wrote a new function enlist() to effect
+the foregoing bug fix.
+
+Incremented the version number.
+Version 0.2-7.
+
+23/10/2024
+Changed name of estVar() to estSigsq(); there's an estVar()
+function in the stats package.
+
+Incremented the version number.
+Version 0.2-8.
+
+25/10/2024.
+Fixed the loony in buildV.R, that I'd spotted in the scalars-only version.
+
+Incremented the version number.
+Version 0.2-9.
+
+28/10/2024
+Adjusted code to accommodate the "unorthodox" model y ~ B + A*B.
+Changed the name of enlist() to reenlist() :-).
+
+Incremented the version number.
+Version 0.2-10.
+
+30/10/2024
+Added (auxiliary) function datagensto() to generate artificial data,
+based on the stomata data.
+
+05/11/2024
+Added argument "seed" to function datagenkv() ("seed" becomes an attribute
+of the returned value).
+
+Incremented the version number.
+Version 0.2-11.
+
+07/11/2024
+Adjusted kanova() to give provide the appropriate "Effect name" when
+an unorthodox test is used.
+
+Incremented the version number.
+Version 0.2-12.
+
+08/11/2024
+Added arguments meansonly=FALSE and peturbLayer=0 to the
+undocumented function datagensto().
+Fixed the bug of not setting the seed in datagensto().
+
+Incremented the version number.
+Version 0.2-13.
+
+09/11/2024
+Fixed bug in datagensto() (had left an bit of code, that did not
+use perturbLayer, lying around).
+
+Incremented the version number.
+Version 0.2-14.
+
+10/11/2024
+Made numerous adjustments to kanova.Rd
+
+Incremented the version number.
+Version 0.2-15.
+
+11/11/2024
+Corrected a typo in kanova.Rd ("permtype defaults to "resperm" changed
+to "permtype defaults to "stdres").
+
+12/11/2024
+Made corrections and adjustments to kanova.Rd, in respect of the
+discussion of weights.
+
+Incremented the version number.
+Version 0.2-16.
+
+17/11/2024
+Major revision, straightening out my previous confused thinking
+in respect of the additive model.  Got rid of the "unorthodox"
+model concept.  Corrected some miss-statements, errors and
+confusion in the help files.
+
+Incremented the version number.
+Version 0.3-1.
+
+21/12/2024
+Added the capacity for kanova() test for an A effect within each
+level of B.  New argument bylevel=FALSE.
+
+Incremented the version number.
+Version 0.3-2.
+
+31/12/2024
+Made (yet more) revisions to the functions for calculating the variances
+of numerators in the test statistics.  Hoping like mad that I have
+at last got it right.
+
+Rewrote the testStat vignette.
+
+Incremented the version number.
+Version 0.3-3.
+
+12/03/2025
+
+Fixed egregious bugs in buildV.R:
+
+--- added a missing 2/sum(wtm) in mult1
+--- got rid of spurious factor of sum(wtm[i,]) in mutl2
+--- got rid of spurious factor of sum(wtm[,j]) in mutl3
+
+Also got rid of spurious "+" at the beginning of the second
+line of the mult1 code (although it did not seem to do any
+real harm.  But note that getting rid of the "+" at the end
+of the first line of the mult2 code *really* fucks things up
+(since then the first line is syntactically completen whence
+the second line is ignored:
+
+        mult1 <- 1/wtm[i,j] - 2/sum(wtm[i,]) - 2/sum(wtm[,j])+
+                                  + 2*wtm[i,j]/(sum(wtm[i,])*sum(wtm[,j]))
+
+Now (finally, at long last) the theoretical variance expression used in
+buildV.R agrees "reasonably" with an empirical (simulation based) check
+on the variance.
+
+Corrected the testStat vignette (in respect of the bugs noted above.
+Made some other modifications which rendered the vignette a bit more
+coherent.
+
+Incremented the version number.
+Version 0.3-4.
+
+Submitted to CRAN.
+
+Added "missing" Author@R field to the DESCRIPTION file.
+
+Incremented the version number.
+Version 0.3-5.
+
+Submitted to CRAN.
+
+Fixed error I'd made in the Author field in the DESCRIPTION file
+("[aut], [cre]" should have been "[aut, cre]").
+
+Incremented the version number.
+Version 0.3-6.
+
+Submitted to CRAN.
+
+13/04/2025
+
+Fixed another error in the Author field in the DESCRIPTION file;
+the ORCID needs to be included, as in:
+
+Author:    Rolf Turner [aut, cre] ORCID: <https://orcid.org/0000-0001-5521-5218>
+
+Incremented the version number.
+Version 0.3-7.
+
+Submitted to CRAN.
+
+Fixed another error in the Author field in the DESCRIPTION file;
+should be:
+
+Author:    Rolf Turner [aut, cre] (ORCID: <https://orcid.org/0000-0001-5521-5218>)
+
+(Note the parentheses.)
+
+Incremented the version number.
+Version 0.3-8.
+
+Submitted to CRAN.
+
+14/03/2025
+
+Rebuilt using Rdevel
+
+Incremented the version number.
+Version 0.3-9.
+
+Submitted to CRAN.
+
+14/03/2025
+
+Removed quotes from around Anova in the title field of the DESCRIPTION
+file.
+
+Incremented the version number.
+Version 0.3-10.
+
+Submitted to CRAN.
+
+16/03/2015
+
+Corrected errors in the vignette ("testStat.tex").
+
+Incremented the version number.
+Version 0.3-11.
+
+18/03/2025
+
+Corrected errors in kanova.Rd
+Removed \dontrun{} from the articial data example in kanova.Rd.
+Removed \dontrun{} from the Devore7 example in kanova.Rd.
+Removed else{} clauses following if(require(<package>)), so no
+errors get thrown if the required package is not available.
+
+Incremented the version number.
+Version 0.3-12.

@@ -1,0 +1,322 @@
+\documentclass[12pt]{article}
+\parindent 0cm
+\usepackage{amssymb,amsmath,graphicx,float}
+\usepackage[UKenglish]{isodate}
+\usepackage[round]{natbib}
+\newcommand{\pt}{\mbox{\scalebox{0.4}{$\bullet$}}}
+\newcommand{\Cov}{\mbox{$\textup{\textrm{Cov}}$}}
+\newcommand{\Var}{\mbox{$\textup{\textrm{Var}}$}}
+\newcommand{\tils}{\mbox{$\tilde{s}$}}
+\newcommand{\tilsig}{\mbox{$\tilde{\sigma}$}}
+\allowdisplaybreaks
+\begin{document}
+\title{Mathematical details of the test statistics used by \texttt{kanova}}
+\author{Rolf Turner}
+\date{\today}
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+This note presents in some detail the formulae for the test statistics
+used by the \texttt{kanova()} function from the \texttt{kanova}
+package.  These statistics are based on, and generalise, the
+ideas discussed in \cite{DiggleEtAl2000} and in \cite{Hahn2012}.
+They consist of sums of integrals (over the argument $r$ of the
+$K$-function) of the usual sort of analysis of variance ``regression'' sums of
+squares, down-weighted over $r$ by the estimated variance of the
+quantities being squared.  The limits of integration $r_0$ and $r_1$
+\emph{could} be specified in the software (e.g. in the related
+\texttt{spatstat} function \texttt{studpermu.test()} they can be
+specified in the argument \texttt{rinterval}).  However there is
+currently no provision for this in \texttt{kanova()}, and $r_0$ and
+$r_1$ are taken to be the min and max of the $r$ component of the
+\texttt{"fv"} object returned by \texttt{Kest()}.   Usually $r_0$
+is 0 and $r_1$ is $1/4$ of the length of the shorter side of the
+bounding box of the observation window in question.
+
+There are test statistics for:
+\begin{itemize}
+\item one-way analysis of variance (one grouping factor),
+\item main effects in a two-way (two grouping factors) additive model, and
+\item a model with interaction versus an additive model in a two-way
+context.
+\end{itemize}
+
+\section{The data}.
+In the context of a single classification factor A, with $a$ levels,
+the data consist of $K$-functions $K_{ij}(r)$, $i = 1, \ldots,
+a$, $k = 1, \ldots, n_i$.  The function $K_{ij}(r)$ is constructed
+(estimated) from an observed point pattern $X_{ij}$.
+
+In the context of two classification factors A and B, with
+$a$ levels and $b$ levels respectively, the data consist of
+$K$-functions $K_{ijk}(r)$, $i = 1, \ldots, a$, $j = 1, \ldots, b$,
+$k = 1, \ldots, n_{ij}$.  The function $K_{ijk}(r)$ is constructed
+(estimated) from an observed point pattern $X_{ijk}$.
+
+The observations have associated \emph{weights}.  The weight associated
+with $K_{ij}(r)$, in the single classification context, is $w_{ij} = m_{ij}^{\eta}$
+where $m_{ij}$ is the number of points in the pattern $X_{ij}$
+The exponent $\eta$ is a constant that may be specified by the
+user of the \texttt{kanova} package.  In the code $\eta$ is denoted
+by \texttt{expo}, and defaults to 2.
+
+In the context of two classification factors, the weight associated
+with $K_{ijk}(r)$ is $w_{ijk} = m_{ijk}^{\eta}$ where $m_{ijk}$
+is the number of points in the pattern $X_{ijk}$.
+
+The test statistics used are calculated in terms of various weighted
+means of the observed $K$-functions.  Explicitly we define
+\begin{align*}
+\tilde{K}_{i\pt}(r)      &= \frac{1}{w_{i\pt}} \sum_{j=1}^{n_i} w_{ij} K_{ij}(r)\\
+\tilde{K}_{\pt\pt}(r)    &= \frac{1}{w_{\pt\pt}} \sum_{i=1}^a
+                            \sum_{j=1}^{n_i} w_{ij} K_{ij}(r)\\
+                         &= \frac{1}{w_{\pt\pt}} \sum_{i=1}^a w_{i\pt}
+                                                \tilde{K}_{i\pt}(r) \\
+\tilde{K}_{ij \pt}(r) &= \sum_{k=1}^{n_{ij}}
+                            \frac{w_{ijk}}{w_{ij \pt}} K_{ijk}(r) \\
+\tilde{K}_{i \pt \pt}(r)
+              &= \sum_{j=1}^{b} \frac{w_{ij \pt}}{w_{i \pt \pt}}
+                   \tilde{K}_{ij \pt}(r) \\ \displaybreak
+              &= \frac{1}{w_{i \pt \pt}} \sum_{j=1}^{b}
+                          \sum_{k=1}^{n_{ij}} w_{ijk} K_{ijk}(r) \\
+\tilde{K}_{\pt j \pt}(r)
+              &= \sum_{i=1}^{a} \frac{w_{ij \pt}}{w_{\pt j \pt}}
+                   \tilde{K}_{ij \pt}(r) \\
+              &= \frac{1}{w_{\pt j \pt}} \sum_{i=1}^{a}
+                          \sum_{k=1}^{n_{ij}} w_{ijk} K_{ijk}(r) \mbox{~and} \\
+\tilde{K}_{\pt \pt \pt}(r)
+              &= \sum_{i=i}^a \frac{w_{i \pt \pt}}{w_{\pt \pt \pt}}
+                 \tilde{K}_{i \pt \pt}(r) \\
+              &= \sum_{j=1}^b \frac{w_{\pt j \pt}}{w_{\pt \pt \pt}}
+                 \tilde{K}_{\pt j \pt}(r) \\
+              &= \sum_{i=1}^a \sum_{j=1}^{b} \frac{w_{ij \pt}}{w_{\pt \pt \pt}}
+                 \tilde{K}_{ij \pt}(r)\\
+              &= \sum_{i=1}^a \sum_{j=1}^{b} \sum_{k=1}^{n_{ij}}
+                 \frac{w_{ijk}}{w_{\pt \pt \pt}} K_{ijk}(r)
+\end{align*}
+
+\section{Variance functions}
+The variances of the $K$-functions are assumed to be proportional
+to functions which are constant over indices within each cell
+of the model.  In the context of a single classification factor,
+the variance of $K_{ij}(r)$ is taken to be $\sigma_i^2(r)/w_{ij}$.
+
+It is assumed that under the null hypothesis of ``no A effect'',
+the functions $\sigma_i^2(r)$ are all equal to a single function,
+$\sigma^2(r)$.  I.e. they do not vary with $i$.
+
+In the context of two classification factors, the variance of
+$K_{ijk}(r)$ is taken to be $\sigma_{ij}^2(r)/w_{ijk}$.
+
+It is assumed that under the null hypothesis of ``no A effect'',
+the functions $\sigma_{ij}^2(r)$ do not vary with $i$, and for
+each $j$ are all equal to a single function $\sigma_j^2(r)$.
+
+\section{Estimating the variance functions}
+
+In the setting of a single classification factor, the variance function
+(unique under the null hypothesis), $\sigma^2(r)$ is estimated by
+\[
+s^2(r) = \frac{1}{n_{\pt} - a} \sum_{i=1}^a \sum_{j=1}^{n_i}
+         w_{ij}(K_{ij}(r) - \tilde{K}_{i\pt}(r))^2 \; .
+\]
+Under the null hypothesis this is an unbiased estimate of $\sigma^2(r)$.
+
+In the setting of two classification factors, where we are testing
+for an A effect, allowing for a B effect, the variance functions
+(depending only on the B effect under the null hypothesis),
+$\sigma^2_j(r)$) are estimated by
+\[
+s^2_j(r) = \frac{1}{n_{\pt j}} \sum_{i=1}^a \sum_{k=1}^{n_{ij}}
+                               w_{ijk}(K_{ijk}(r) - \tilde{K}_{ij\pt}(r))^2 \; .
+\]
+Under the null hypothesis these are a unbiased estimates of the $\sigma^2_j(r)$.
+
+In the setting of two classification factors, where we are testing for
+interaction against an additive model (unlikely to arise as these circumstances
+may be) we need estimates of $\sigma^2_{ij}(r)$.  These are given by
+\[
+s^2_{ij}(r) = \frac{1}{n_{ij} - 1} \sum_{k=1}^{n_{ij}} w_{ijk}(K_{ijk}(r)
+                                            - \tilde{K}_{ij\pt})^2 \; .
+\]
+These are a unbiased estimates of the $\sigma^2_{ij}(r)$.
+
+\section{The test statistics}
+In the setting of a single classification factor A, the statistic
+for testing for an A effect is
+\[
+T = \sum_{i=1}^a n_i \int_{r_0}^{r_1} (\tilde{K}_i(r) - 
+                 \tilde{K}(r))^2/V_i(r) \; dr
+\]
+where $V_i(r)$ is the estimated variance of $\tilde{K}_i(r) - \tilde{K}(r)$.
+This is given by
+\[
+V_i(r) = s^2(r) \left ( \frac{1}{w_\ell \pt} - \frac{1}{w_{\pt \pt}} \right ) \; .
+\]
+
+In the setting of two classification factors A and B, the statistic
+for testing for an A effect allowing for a B effect is
+\[
+T_A = \sum_{i=1}^a n_{i \pt} \int_{r_0}^{r_1} (\tilde{K}_{i \pt}(r) -
+                 \tilde{K}(r))^2/V_{Ai}(r) \; dr
+\]
+where $V_{Ai}(r)$ is the estimated variance of $\tilde{K}_{i \pt}(r) - \tilde{K}(r)$.
+This is given by
+\[
+V_{Ai}(r) = \tils_i^2(r) \left ( \frac{1}{w_{i \pt \pt}} - \frac{2}{w_{\pt \pt \pt}}
+                      \right ) + \frac{1}{w_{\pt \pt \pt}} \sum_{\ell=1}^a
+                      \frac{w_{i \pt \pt}}{w_{\pt \pt \pt}} \tils_{\ell}^2(r) \; .
+\]
+The foregoing expression may be re-written, more compactly, and in a form which
+makes it more obvious that the quantity is positive, as:
+\[
+V_{Ai}(r) = \frac{1}{w_{\pt \pt \pt}} \left [
+            \sum_{\ell=1}^a \zeta_{i \ell} \times \tils^2_{\ell}(r) \right ]
+\]
+where
+\begin{align*}
+\tils^2_{\ell}(r) &= \sum_{j=1}^b \frac{w_{\ell j\pt}}{w_{\ell \pt \pt}} s_j^2(r),
+\; \ell = 1, \ldots, a, \\
+\zeta_{i \ell} &= \left \{ \begin{array}{cl}
+               \nu_{\ell} & \ell \neq i \\
+               \frac{(\nu_i - 1)^2}{\nu_i} & \ell = i 
+               \end{array} \right . \\
+\nu_{\ell} &= \frac{w_{\ell \pt \pt}}{w_{\pt \pt \pt}}, \;
+\ell = 1, \ldots, a.
+\end{align*}
+
+In the setting in which there are two classification factors and we are
+testing for interaction, against an additive models, the test statistic is
+\[
+T_{AB} = \sum_{i=1}^a \sum_{j=1}^b n_{ij} \int_{r_0}^{r_1} (\tilde{K}_{ij \pt}(r) -
+   \tilde{K}_{i \pt \pt}(r) - \tilde{K}_{\pt j \pt}(r) +
+   \tilde{K}(r))^2/V^{AB}_{ij}(r) \; dr
+\]
+where $V^{AB}_{ij}(r)$ is the (sample) variance of $\tilde{K}_{ij}(r)
+- \tilde{K}_{i\pt}(r) - \tilde{K}_{\pt j}(r) + \tilde{K}(r)$.
+The function $V^{AB}_{ij}(r)$ is even messier than $V^A_i(r)$.
+It is given by
+\begin{equation}
+\label{eq:sampvarSSR}
+\begin{split}
+V^{AB}_{ij}(r) = s_{ij}^2(r) &\left ( \frac{1}{w_{i j \pt}} -
+                                      \frac{2}{w_{i \pt \pt}} -
+                                      \frac{2}{w_{\pt j \pt}} +
+                                      \frac{2w_{ij \pt}}{w_{i \pt \pt} w_{\pt j \pt}} +
+                                      \frac{2}{w_{\pt \pt \pt}} \right )+ \\
+               \tils^2_{i \pt}(r) &\left ( \frac{1}{w_{i \pt \pt}} -
+                                   \frac{2}{w_{\pt \pt \pt}} \right )+
+               \tils^2_{\pt j}(r) \left (\frac{1}{w_{\pt j \pt}} -
+                                   \frac{2}{w_{\pt \pt \pt}} \right )+
+                            \frac{\tilde{s}^2(r)}{w_{\pt \pt \pt}}
+\end{split}
+\end{equation}
+where
+\begin{equation}
+\label{eq:sampvars}
+\begin{split}
+\tils_{i \pt}^2(r) &= \sum_{j=1}^b \frac{w_{ij \pt}}{w_{i \pt \pt}} s^2_{ij}(r) \\
+\tils_{\pt j}^2(r) &= \sum_{i=1}^a \frac{w_{ij \pt}}{w_{\pt j \pt}} s^2_{ij}(r)
+                        \mbox{~and}\\
+\tils^2(r) &= \sum_{i=1}^a \sum_{j=1}^b \frac{w_{i j \pt}}{w_{\pt \pt \pt}}
+                                          s^2_{ij}(r) \; .
+\end{split}
+\end{equation}
+Note that \eqref{eq:sampvarSSR} is just \eqref{eq:popvarSSR},
+and \eqref{eq:sampvars} is just \eqref{eq:popvars} (see below)
+with population quantities replaced by sample (estimated) quantities.
+
+Here are some (terse) details about the variance of
+\mbox{$\tilde{K}_{ij \pt}(r) - \tilde{K}_{i \pt \pt}(r)
+- \tilde{K}_{\pt j \pt}(r) + \tilde{K}(r)$} as given by
+\eqref{eq:popvarSSR}.
+\begin{align*}
+\Var(\tilde{K}_{ij \pt}(r))      &= \frac{\sigma_{ij}^2(r)}{w_{i j \pt}} \\
+\Var(\tilde{K}_{i \pt \pt}(r))   &= \frac{\tilsig_{i\pt}^2(r)}{w_{i \pt \pt}} \\
+\Var(\tilde{K}_{\pt j \pt}(r)    &= \frac{\tilsig_{\pt j}^2(r)}{w_{\pt j \pt}} \\
+\Var(\tilde{K}_{\pt \pt \pt}(r)) &= \frac{\tilsig^2(r)}{w_{\pt \pt \pt}} \\
+\Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{i \pt \pt})
+                                 &= \frac{\sigma_{ij}^2(r)}{w_{i \pt \pt}} \\
+\Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{\pt j \pt})
+                                 &= \frac{\sigma_{ij}^2(r)}{w_{\pt j \pt}} \\
+\Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{\pt \pt \pt})
+                                 &= \frac{\sigma_{ij}^2(r)}{w_{\pt \pt \pt}} \\
+\Cov(\tilde{K}_{i \pt \pt}(r),\tilde{K}_{\pt j \pt})
+                                 &= \frac{w_{i j \pt} \sigma_{ij}^2(r)}{w_{i \pt \pt}
+                                                             w_{\pt j \pt}} \\
+\Cov(\tilde{K}_{i \pt \pt}(r),\tilde{K}_{\pt \pt \pt})
+                                 &= \frac{\tilsig_{i \pt}^2(r)}{w_{\pt \pt \pt}} \\
+\Cov(\tilde{K}_{\pt j \pt}(r),\tilde{K}_{\pt \pt \pt}(r)
+                                 &= \frac{\tilsig_{\pt j}^2(r)}{w_{\pt \pt \pt}}
+\end{align*}
+where
+\begin{equation}
+\label{eq:popvars}
+\begin{split}
+\tilsig_{i \pt}^2(r) &= \sum_{j=1}^b \frac{w_{ij \pt}}{w_{i \pt \pt}} \sigma^2_{ij}(r) \\
+\tilsig_{\pt j}^2(r) &= \sum_{i=1}^a \frac{w_{ij \pt}}{w_{\pt j \pt}} \sigma^2_{ij}(r)
+                        \mbox{~and}\\
+\tilsig^2(r) &= \sum_{i=1}^a \sum_{j=1}^b \frac{w_{i j \pt}}{w_{\pt \pt \pt}}
+                                          \sigma^2_{ij}(r) \; .
+\end{split}
+\end{equation}
+
+Sample calculation:  to see that $\Cov(\tilde{K}_{ij \pt}(r),
+\tilde{K}_{i \pt \pt}) = \sigma_{ij}^2/w_{i \pt \pt}$, note that
+$\tilde{K}_{i \pt \pt}(r)$ is a weighted sum over $\ell$,
+of terms $\tilde{K}_{i \ell \pt}(r)$.% (see page \pageref{pg:kays}).
+The $K$-functions involved correspond to
+independent patterns, and so are likewise independent.  Consequently
+$\tilde{K}_{ij \pt}(r)$ is independent of
+$\tilde{K}_{i \ell \pt}(r)$, and the corresponding covariances are 0,
+except when $\ell = j$.  We thus get only a single non-zero term from
+the sum of the covariances, explicitly
+\[
+\Cov(\tilde{K}_{ij \pt}(r),\frac{w_{ij \pt}}{w_{i \pt \pt}} \tilde{K}_{ij \pt})
+= \frac{w_{ij \pt}}{w_{i \pt \pt}} \Var(\tilde{K}_{ij \pt})
+= \frac{w_{ij \pt}}{w_{i \pt \pt}} \frac{\sigma_{ij}^2}{w_{ij \pt}}
+= \frac{\sigma_{ij}^2}{w_{i \pt \pt}} \; .
+\]
+
+Finally we can obtain the variance term of interest, which is
+$\Var(\tilde{K}_{ij \pt}(r) - \tilde{K}_{i \pt \pt}(r) - \tilde{K}_{j
+\pt \pt}(r) + \tilde{K}_{\pt \pt \pt}(r))$.  This expression is equal to
+\begin{align*}
+& \Var(\tilde{K}_{ij \pt}(r)) +
+  \Var(\tilde{K}_{i \pt \pt}(r)) +
+  \Var(\tilde{K}_{\pt j \pt}(r)) +
+  \Var(\tilde{K}_{\pt \pt \pt}(r)) \\
+& -2 \Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{i \pt \pt}(r))
+  -2 \Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{\pt j \pt(r)})
+  +2 \Cov(\tilde{K}_{ij \pt}(r),\tilde{K}_{\pt \pt \pt}(r)) \\ 
+& +2 \Cov(\tilde{K}_{i \pt \pt}(r),\tilde{K}_{\pt j \pt})
+  -2 \Cov(\tilde{K}_{i \pt \pt}(r),\tilde{K}_{\pt \pt \pt}(r))\\
+& -2 \Cov(\tilde{K}_{\pt j \pt}(r),\tilde{K}_{\pt \pt \pt}(r)) \; .
+\end{align*}
+Collecting terms in the foregoing expression, and using the
+previously stated symbolic representations of these terms, we obtain
+\begin{equation}
+\label{eq:popvarSSR}
+\begin{split}
+&\sigma_{ij}^2(r) \left (
+\frac{1}{w_{i j \pt}} -
+\frac{2}{w_{i \pt \pt}} -
+\frac{2}{w_{\pt j \pt}} +
+\frac{2 w_{i j \pt}}{w_{i \pt \pt} w_{\pt j \pt}} +
+\frac{2}{w_{\pt \pt \pt}} \right ) + \\
+&\tilsig_{i \pt}(r) \left(
+\frac{1}{w_{i \pt \pt}} -
+\frac{2}{w_{\pt \pt \pt}} \right ) +
+\tilsig_{\pt j}(r) \left(
+\frac{1}{w_{\pt j \pt}} -
+\frac{2}{w_{\pt \pt \pt}} \right ) +
+\frac{\tilsig(r)}{w_{\pt \pt \pt}} \; .
+\end{split}
+\end{equation}
+
+Replacing the population variances by their corresponding estimates
+(sample quantities) we obtain \eqref{eq:sampvarSSR}.
+\bibliographystyle{plainnat}
+\bibliography{kanova}
+\end{document}
