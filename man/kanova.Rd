@@ -5,23 +5,24 @@
 }
 \description{
     One-way and two-way pseudo analysis of variance for replicated
-    point patterns, grouped by one or two classification factors,
-    on the basis of the values of a summary function.  This summary
-    function may be specified by the user.  It is usually one of
-    the four standard summary functions, most often the K-function,
-    which is the default.
+    point patterns, grouped by one or two classification factors.
+    The analysis is based on the values of a summary function.
+    This summary function may be specified by the user.  It is
+    usually one of the four standard summary functions, most often
+    the K-function, which is the default.
 }
 \usage{
-    kanova(fmla,data,expo=2,rsteps=128,r=NULL,sumFnNm=NULL,
+    kanova(fmla,data,expo=1,rsteps=128,r=NULL,sumFnNm=NULL,
            warnSFN=TRUE,test=TRUE,bylevel=FALSE,
-           permtype=c("stdres","data"),nperm=99,brief=TRUE,verb=TRUE,keepdata=FALSE)
+           permtype=c("stdres","data"),nperm=99,brief=TRUE,verb=TRUE,
+           keepdata=FALSE,divByVar=TRUE)
 }
 \arguments{
-  \item{fmla}{A formula specifying the model to be fitted.
-  There can be at most two main effect predictors (possibly with
-  interaction between them).  The left hand side of \code{fmla}
-  may be omitted.  If so, it is taken to be the name of the first
-  column of \code{data}.
+  \item{fmla}{A formula specifying the test to be conducted.
+  (See \bold{Details}.)  There can be at most two main effect
+  predictors (possibly with interaction between them).  The left
+  hand side of \code{fmla} may be omitted.  If so, it is taken to
+  be the name of the first column of \code{data}.
 }
   \item{data}{A hyperframe (see
   \code{\link[spatstat.geom]{hyperframe}()}) containing the data to
@@ -123,11 +124,13 @@
   \item{test}{Logical scalar.  Should a Monte Carlo test of the
   null hypothesis be carried out?
 } 
-  \item{bylevel}{Logical scalar.  Should a test of the model \code{y
-  ~ A + B} be carried out as \code{b} one-variable tests of the
-  significance of A, within each level of B?  That is, should we
-  perform \code{b} tests of \code{y ~ A, data=sdata[[i]]}, \code{i =
-  1, ..., b} where \code{b} is the number of levels of the factor B?
+  \item{bylevel}{Logical scalar.  Should a test of the model
+  \code{y ~ A + B} be carried out as \code{b} one-variable tests
+  of the significance of A, within each level of B?  That is,
+  should we perform \code{b} tests specified by \code{y ~ A,
+  data=sdata[[i]]}, \code{i = 1, ..., b} where \code{b} is the
+  number of levels of the factor B, and \code{sdata[[i]]} consists
+  of those data corresponding to the i-th level of factor B?
 
   If \code{bylevel} is \code{TRUE}, then the object returned by
   \code{kanova()} is an object of class \code{"multi.kanova"}, which is
@@ -143,8 +146,8 @@
   model, which have been standardised by dividing them by their
   (estimated) standard deviations.  After permutation, the residuals
   are \dQuote{unstandardised} by multiplying them by the appropriate
-  standard deviation.  They are then added back to the fitted values
-  from the fitted model.
+  standard deviation.  The results are then added back to the fitted
+  values from the null model.
 
   If \code{permtype} is \code{"data"} then the Monte Carlo data
   are formed by permuting the original data sets. 
@@ -177,45 +180,50 @@
   of the object returned by \code{kanova()}?  See \bold{Value}
   for more detail.
 }
+  \item{divByVar}{Logical scalar.  Should the components of the
+  test statistic be divided by the variances of the underlying
+  un-squared values? (See \bold{Details}.)
+}
 }
 \details{
-  The formulae used in the \code{fmla} argument \dQuote{look like}
-  those used in \dQuote{ordinary} analysis of variance, but have a
-  different interpretation.  The formula \code{y ~ A + B} does not
-  actually fit the additive \code{A + B} model.  It effects as test
-  of the \dQuote{significance} of A, allowing for B.  The factor B is
-  ``allowed for'' (if \code{permtype} is \code{"data"}) by permuting
-  the data \emph{within} the levels of B.  If \code{permtype}
-  is \code{"stdres"}) the standardised residuals are permuted.
-  These are residuals from the saturated model, which includes a
-  B effect.  Likewise \code{y ~ B + A} tests for a B effect,
-  allowing for an A effect, in the same manner.
-
-  In particular \code{y ~ A + B} is not equivalent to \code{y ~
-  B + A} (whereas in \dQuote{ordinary} analysis of variance) they
-  \emph{are} equivalent).
+  \describe{
+  \item{formulae:}{
+  \eqn{~}\cr
+  The formulae used in the \code{fmla} argument may take the
+  form \code{y ~ A}, \code{y ~ A + B}, or \code{y ~ A * B}.
+  These \dQuote{look like} those used in \dQuote{ordinary} analysis
+  of variance, but in the second instance the interpretation
+  is different.  The formula \code{y ~ A + B} does not actually
+  fit the additive \code{A + B} model.  It effects a test of the
+  \dQuote{significance} of A, \dQuote{allowing for B} (see below).
+  It is thereby obvious that \code{y ~ A + B} is not equivalent
+  to \code{y ~ B + A} (whereas in \dQuote{ordinary} analysis of
+  variance) they \emph{are} equivalent).
 
   The formula \code{y ~ A * B} tests the model with interaction
   against the additive model, as in ordinary analysis of variance.
-  The additive model is usually not meaningful in the current
-  context, so a test for interaction is probably not meaningful
-  either.  Such a test is included in the code basically for the
+  The additive model is not often meaningful in the current
+  context, so such a test for interaction is probably not meaningful
+  either.  The test is included in the code basically for the
   sake of completeness, and to allow for the possibility that a
   user may encounter a circumstance in which the additive model
   actually is meaningful.
-
+  }
+  \item{allowing for a second effect:}{
+  \eqn{~}\cr
+  This concept is pertinent only when the formula in question is of
+  the form \code{y ~ A + B}.  In this setting, if \code{permtype}
+  is \code{"data"}, the factor B is ``allowed for'' by permuting
+  the data \emph{within} the levels of B.  If \code{permtype}
+  is \code{"stdres"}) the standardised residuals are permuted.
+  These are residuals from the saturated model, which includes a
+  B effect which \dQuote{allows for} B.
+  }
+  \item{integration:}{
+  \eqn{~}\cr
   The value of the test statistic is obtained as a sum of numerical
-  integrals of certain sums of squares.  The integrals are
-  computed via a rough trapezoid rule and the sums of squares are
-  \dQuote{standardised}.  I.e. they are  divided by the estimated
-  variance of the quantity being squared.  This procedure is
-  analogous to the studentisation procedure used by Hahn, 2012. The
-  quantities that are involved in the sums of squares are formed
-  from certain \dQuote{fitted values} which are weighted means
-  of the observations.  The variance referred to is formed as a
-  weighted mean of squares of the residuals, which are of course
-  equal to the observations minus the fitted values.
-
+  integrals of certain sums of squares.  The integrals are computed
+  via a rough trapezoid rule.
   The integration is carried out over the value of \code{r}, the
   argument of the summary functions that are being analysed.  If the
   response consists of numeric vectors of length 1, i.e. of scalars,
@@ -223,11 +231,39 @@
   (downweighted) sum of squares is returned.  You may, if you like,
   think of this as integrating with respect to a measure which has
   a point mass of 1 at a conceptual single value of \code{r}.
+  }
+  \item{the \code{divByVar} argument:}{
+  \eqn{~}\cr
+  The \code{divByVar} argument exists essentially to allow the
+  package developers to conduct certain simulation experiments.
+  In normal circumstances the user would not set the value of
+  this argument (i.e. would leave the value of this argument as
+  \code{TRUE}).
 
+  If the argument \code{divByVar} is \code{TRUE}, then the sums
+  of squares, from which the test statistic is formed, are are
+  divided by the estimated variance of the quantity being squared.
+  This procedure is analogous to the studentisation procedure
+  used by Hahn, 2012.  If \code{divByVar} is \code{FALSE} then
+  no such division takes place and the sums of squares involved
+  are \dQuote{raw}.
+
+  The quantities that are involved in the sums of squares are
+  formed from certain \dQuote{fitted values} which are weighted
+  means of the observations (observed values of summary functions).
+  The variance referred to is formed as a weighted mean of squares
+  of the residuals, which are of course equal to the observations
+  minus the fitted values.
+
+  }
+  \item{more detail:}{
+  \eqn{~}\cr
   More detail about the test statistic, the fitted values, the
   residuals and the estimated variance, can be found in the vignette
   \code{"testStat"}.
-}
+  }
+}}
+
 \section{Warning}{
   When \code{keepdata} is \code{TRUE}, the way that the data
   is \dQuote{kept} depends on the value of \code{bylevel}.
@@ -249,7 +285,7 @@
   reason for doing so and a sound understanding of the consequences.
 
   \item Only one-way and two-way (pseudo) analyses of variance
-  are accommodated.  If you feel inclined to ask why there is not
+  are accommodated.  If you feel inclined to ask why there is no
   provision for higher order analysis of variance, just look at
   the code and the answer should be obvious.  It \emph{might} be
   possible to implement higher order pseudo analysis of variance of

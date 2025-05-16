@@ -17,43 +17,59 @@ permSumFns <- function(sumFns,rAndF,permtype) {
         fV  <- rAndF$fitVals
         rez <- rAndF$resids
         wts <- getWts(sumFns)
+        eps <- .Machine$double.eps
         if(type=="oneway") {
-# Here the full model and the saturated model are the same, and we
-# *don't* want to use the variances from the two-way saturated model.
-# (So leave satMod=FALSE in the call to estSigsq().)
-            sd   <- sqrt(estSigsq(sumFns))
+# We *do* want the variance of the residuals from the saturated
+# model, but here this is the same as the full model, so we needn't
+# set satMod=TRUE in the call to estSigsq().
+
+            sdpb <- sqrt(estSigsq(sumFns)) # pb = possibly bad
+            nok  <- sdpb <= .Machine$double.eps
+            sdok <- ifelse(nok,1,sdpb)
             ip   <- sample(1:N)
-            prez <- lapply(1:N,function(k,x,sd,w){x[,k]/(sd*sqrt(w[k]))},
-                                        x=rez,sd=sd,w=wts)[ip]
+            prez <- lapply(1:N,function(k,x,sd){x[,k]/sd},
+                                        x=rez,sd=sdok)[ip]
             psF  <- lapply(1:N,function(k,fv,sd,w,prez){
-                              fvstar <- fv[[k]] + sd*sqrt(w[k])*prez[[k]]
+                              fvstar <- fv[[k]] + sd*prez[[k]]
                               attr(fvstar,"weight") <- w[k]
-                              fvstar},fv=fV,sd=sd,w=wts,prez=prez)
+                              fvstar},fv=fV,sd=sdok,w=wts,prez=prez)
         } else if(type=="twoway") {
-            sd   <- lapply(estSigsq(sumFns,satMod=TRUE),sqrt)
+# Here we need to set satMod=TRUE, so as to get variance of the residuals
+# from the saturated (interaction) model.
+            sdpb <- lapply(estSigsq(sumFns,satMod=TRUE),sqrt) # pb = possibly bad
+            sdok <- lapply(sdpb,function(x){
+                              nok <- sapply(x,function(xx){xx <= eps})
+                              ifelse(nok,1,x)
+                              })
             ip   <- sample(1:N)
-            prez <- lapply(1:N,function(k,x,sd,w){
+            prez <- lapply(1:N,function(k,x,sd){
                                sdloc <- sd[[colnames(x)[k]]]
-                               x[,k]/sdloc*sqrt(w[k])
-                               },x=rez,sd=sd,w=wts)[ip]
+                               x[,k]/sdloc
+                               },x=rez,sd=sdok)[ip]
             psF  <- lapply(1:N,function(k,fv,sd,w,prez){
                                sdloc <- sd[[names(fv)[k]]]
-                               fvstar <- fv[[k]] + sdloc*sqrt(w[k])*prez[[k]]
+                               fvstar <- fv[[k]] + sdloc*prez[[k]]
                                attr(fvstar,"weight") <- w[k]
-                               fvstar},fv=fV,sd=sd,w=wts,prez=prez)
+                               fvstar},fv=fV,sd=sdok,w=wts,prez=prez)
        } else if(type=="interac") {
-            sd   <- lapply(estSigsq(sumFns,satMod=TRUE),sqrt)
+# As in the oneway setting, we *do* want the variance of the
+# residuals from the saturated model, but again this is the same
+# as the full model, so we needn't set satMod=TRUE in the call
+# to estSigsq().
+            sdpb <- lapply(estSigsq(sumFns),sqrt) # pb = possibly bad
+            sdok <- lapply(sdpb,function(x){nok <- x <= eps
+                             ifelse(nok,1,x)})
             ip   <- sample(1:N)
-            prez <- lapply(1:N,function(k,x,sd,w){
+            prez <- lapply(1:N,function(k,x,sd){
                                sdloc <- sd[[colnames(x)[k]]]
-                               x[,k]/sdloc*sqrt(w[k])},x=rez,sd=sd,w=wts)
+                               x[,k]/sdloc},x=rez,sd=sdok)
             prez <- prez[ip]
             psF  <- lapply(1:N,function(k,fv,sd,w,prez){
                                sdloc <- sd[[names(fv)[k]]]
-                               fvstar <- fv[[k]] + sdloc*sqrt(w[k])*prez[[k]]
+                               fvstar <- fv[[k]] + sdloc**prez[[k]]
                                attr(fvstar,"weight") <- w[k]
                                fvstar
-                               },fv=fV,sd=sd,w=wts,prez=prez)
+                               },fv=fV,sd=sdok,w=wts,prez=prez)
        }
     }
     attributes(psF) <- attributes(sumFns)

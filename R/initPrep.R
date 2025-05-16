@@ -110,9 +110,11 @@ if(is.null(B)) {
 } else {
     AB <- interaction(A,B)
 }
-attr(sumFns,"A")    <- A
-attr(sumFns,"B")    <- B
-attr(sumFns,"AB")   <- AB
+attr(sumFns,"A")   <- A
+attr(sumFns,"B")   <- B
+attr(sumFns,"AB")  <- AB
+attr(sumFns,"Anm") <- Anm
+attr(sumFns,"Bnm") <- Bnm
 
 # Make r and type attributes of sumFns.
 attr(sumFns,"r")    <- r
@@ -130,6 +132,5 @@ if(type %in% c("oneway","twoway")) {
 enns <-table(splif)
 if(any(enns < 2))
     stop("All cell counts must be at least 2.\n")
-
 sumFns
 }

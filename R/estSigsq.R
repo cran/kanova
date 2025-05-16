@@ -1,22 +1,21 @@
 estSigsq <- function(sumFns,satMod=FALSE) {
 #
-# If satMod is FALSE, the estimated variances ("sigma-squared")  are
-# be used used for the purpose of "standardising" the test statistic,
-# which is analogous to Hahn's "studentisation" procedure.  If
-# satMod is TRUE they are used for standardising the residuals.
-# In this case they must be the variances appropriate to the
-# saturated model.  Note that in the single classification setting
-# the full model and the saturated model are the same, so there is
-# only one sort of variance.  Only in the two classification setting
-# is there a difference, whereby we need to choose between the
-# "twoway" model and the saturated model.
-#
-type    <- attr(sumFns,"type")
-if(type=="oneway") {
-    if(satMod) stop("Do not set satMod=TRUE when \"type\" is \"oneway\".\n")
-} else if(type=="twoway") {
-    if(satMod) type <- "interac"
-}
+# We may wish to use the estimated variances for the for the
+# purpose of "normalising" or "homongenising" the summands of the
+# test statistic.  Doing so is analogous to Hahn's "studentisation"
+# procedure.  We may also wish to use them for the purpose of
+# standardising the residuals.  In the latter case they must be
+# the variances appropriate to the saturated model.  In the single
+# classification setting, and (of course) in the interaction
+# setting, the full model and the saturated model are the same.
+# Only in the two-classification ("twoway") setting is there a
+# difference, and only then does the satMod argument have an impact.
+# The impact is to change "type" to "interac" (which is the saturated
+# model in the two-classification setting).
+
+type <- attr(sumFns,"type")
+if(type=="twoway" & satMod) type <- "interac"
+
 rslt <- switch(EXPR=type,
     oneway={
         xxx  <- split(sumFns,f=attr(sumFns,"A"))
@@ -30,19 +29,29 @@ rslt <- switch(EXPR=type,
         B   <- attr(sumFns,"B")
         xxx <- split(sumFns,f=B)
         asv <- split(A,f=B)[[1]]
+        knt <- table(asv)
+        if(any(knt <= 1)) {
+             Anm <- attr(sumFns,"Anm")
+             iii <- which(knt <= 1)
+             badlev <- paste(levels(asv)[iii],collapse=" ")
+             whinge <- paste0("Levels ",badlev," of factor ",Anm," have too few\n",
+                              "  observations for variances to be calculated.\n")
+             stop(whinge)
+        }
         yyy <- lapply(xxx,function(x,f){split(x,f=f)},f=asv) 
         zzz <- lapply(yyy,function(y){lapply(y,wtdSS)})
         lapply(zzz,function(z){
-                      urk <- sapply(z,function(v){attr(v,"n")})
-                      ndot <- sum(urk)
-                      Reduce("+",z)/(ndot - length(z))
+                      ens  <- sapply(z,function(v){attr(v,"n")})
+                      ndot <- sum(ens)
+                      den  <- ndot - length(z)
+                      sss  <- Reduce("+",z)/den
                    })
         },
     interac={
         AB  <- attr(sumFns,"AB")
         xxx <- split(sumFns,f=AB)
         zzz <- lapply(xxx,wtdSS)
-        sss <- lapply(zzz,function(w){w/(attr(w,"n")-1)})
+        sss <- lapply(zzz,function(z){z/(attr(z,"n")-1)})
     })
 rslt
 }

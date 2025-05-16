@@ -1,6 +1,7 @@
 resAndFit <- function(sumFns) {
-# Note:  These are the residuals and fitted values under the
-# appropriate null hypothesis.
+#
+# Note:  The residuals are those from the saturated model.  The
+# fitted values are those from under the appropriate null hypothesis.
 #
 
 N <- length(sumFns)
@@ -11,7 +12,7 @@ switch(EXPR=type,
         Khat  <- resAndFitCmpnts(sumFns)$Khat
         fitz  <- rep(list(Khat),N)
         A     <- attr(sumFns,"A")
-        sfitz <- lapply(split(sumFns,f=A),wtdMean)
+        sfitz <- lapply(split(sumFns,f=A),wtdMean) # saturated "fitz"
         sfitz <- sfitz[match(A,names(sfitz))]
     },
     twoway = { # Fitted values from a two factor data structure. Null
@@ -22,7 +23,7 @@ switch(EXPR=type,
         AB    <- attr(sumFns,"AB")
         fitz  <- reenlist(ufitz,B)
         names(fitz) <- AB
-        sfitz <- lapply(split(sumFns,f=AB),wtdMean)
+        sfitz <- lapply(split(sumFns,f=AB),wtdMean) # saturated "fitz"
         sfitz <- reenlist(sfitz,AB)
         names(sfitz) <- AB
     },
@@ -43,11 +44,12 @@ switch(EXPR=type,
         nms    <- sapply(1:N,function(i,A,B){paste(A[i],B[i],sep=".")},A=A,B=B)
         names(fitz) <- nms
         AB    <- attr(sumFns,"AB")
-        sfitz <- lapply(split(sumFns,f=AB),wtdMean)
+        sfitz <- lapply(split(sumFns,f=AB),wtdMean) # saturated "fitz"
         sfitz <- reenlist(sfitz,f=AB)
         names(sfitz) <- AB
     }
 )
 rez <- do.call(cbind,sumFns) - do.call(cbind,as.list(sfitz))
+dimnames(rez) <- list(seq(along=attr(sumFns,"r")),names(sfitz))
 list(resids=rez,fitVals=fitz)
 }

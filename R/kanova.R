@@ -1,7 +1,7 @@
-kanova <- function(fmla,data,expo=2,rsteps=128,r=NULL,sumFnNm=NULL,
+kanova <- function(fmla,data,expo=1,rsteps=128,r=NULL,sumFnNm=NULL,
                    warnSFN=TRUE,test=TRUE,bylevel=FALSE,
                    permtype=c("stdres","data"),nperm=99,brief=TRUE,
-                   verb=TRUE,keepdata=FALSE) {
+                   verb=TRUE,keepdata=FALSE,divByVar=TRUE) {
 #
 # Function to conduct one or two-way analysis of variance of
 # summary functions (Kest, Fest, Gest, or Jest)  of replicated point
@@ -15,7 +15,7 @@ if(length(fmla) == 2) {
     cform <- paste(rspNm,"~",as.character(fmla[2]))
     fmla  <- stats::as.formula(cform)
 } else {
-    rspNm  <- as.character(fmla[2])
+    rspNm <- as.character(fmla[2])
     if(!rspNm %in% names(data)) {
         whinge <- paste0("The response name is ",rspNm,", which is not the name\n",
                          "  of any of the columns of the hyperframe \"data\".\n")
@@ -38,6 +38,7 @@ if(inherits(data[,rspNm,drop=TRUE],"ppplist")) {
 # Augment object "data" from the parent frame if necessary.
 preds  <- attr(terms(fmla),"term.labels")
 npreds <- length(preds)
+if(npreds == 0) stop("No predictors. (???)\n")
 for(i in 1:npreds) {
     if(grepl(":",preds[i])) next
     if(!preds[i] %in% names(data)) {
@@ -110,7 +111,7 @@ if(bylevel) {
                        type=type,expo=expo,rsteps=rsteps,r=r)
     
     # Calculate the statistic.
-    Tobs <- testStat(sumFns)
+    Tobs <- testStat(sumFns,divByVar=divByVar)
     if(!test) {
        if(brief) {
            rslt <- list(EffectName=effNm,stat=Tobs)
@@ -135,7 +136,7 @@ if(bylevel) {
     Tstar <- numeric(nperm)
     for(i in 1:nperm){
         pSumFns  <- permSumFns(sumFns,rAndF,permtype)
-        Tstar[i] <- testStat(pSumFns)
+        Tstar[i] <- testStat(pSumFns,divByVar=divByVar)
         if(verb) cat(i,"")
         if(verb & i%%10 == 0) cat("\n")
     }

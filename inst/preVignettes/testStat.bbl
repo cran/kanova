@@ -1,9 +1,14 @@
-\begin{thebibliography}{2}
+\begin{thebibliography}{3}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Diggle and Turner(2025)]{DiggleTurner2025}
+Peter~J. Diggle and Rolf Turner.
+\newblock Pseudo analysis of variance of $k$-functions.
+\newblock Not yet published, 2025.
 
 \bibitem[Diggle et~al.(2000)Diggle, Mateu, and Clough]{DiggleEtAl2000}
 Peter~J. Diggle, Jorge Mateu, and Helen~E. Clough.

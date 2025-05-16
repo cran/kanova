@@ -1,4 +1,4 @@
-oEngine <- function(sumFns) {
+oEngine <- function(sumFns,divByVar) {
 #
 # Calculate the test statistic in the "one way" case.`
 #
@@ -17,17 +17,18 @@ M <- (do.call(cbind,barxi) - barx)^2
 s2 <- estSigsq(sumFns) # vector of length = length(attr(sumFns,"r"))
 
 # Form the multiplier.
-wtv   <- sapply(split(getWts(sumFns),f=A),sum) # weight vector
-wtsum <- sum(wtv)
-vmlt  <- 1/wtv - 1/wtsum
-V     <- outer(s2,vmlt,"*")
-
-# Take the ratio.
-MoV <- M/V
+if(divByVar) {
+    wtv   <- sapply(split(getWts(sumFns),f=A),sum) # weight vector
+    wtsum <- sum(wtv)
+    vmlt  <- 1/wtv - 1/wtsum
+    V     <- outer(s2,vmlt,"*")
+    MoV   <- M/V
+} else {
+    MoV <- M
+}
 
 # Integrate and sum up.
-r   <- attr(sumFns,"r")
-ens <- table(A)
-rslt <- sum(ens*apply(MoV,2,trapint,r=r))
-rslt
+r    <- attr(sumFns,"r")
+ens  <- table(A)
+sum(ens*apply(MoV,2,trapint,r=r))
 }

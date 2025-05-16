@@ -8,6 +8,7 @@
 \newcommand{\Var}{\mbox{$\textup{\textrm{Var}}$}}
 \newcommand{\tils}{\mbox{$\tilde{s}$}}
 \newcommand{\tilsig}{\mbox{$\tilde{\sigma}$}}
+\newcommand{\sco}{\mbox{$\cal N$}}
 \allowdisplaybreaks
 \begin{document}
 \title{Mathematical details of the test statistics used by \texttt{kanova}}
@@ -54,19 +55,44 @@ $K$-functions $K_{ijk}(r)$, $i = 1, \ldots, a$, $j = 1, \ldots, b$,
 $k = 1, \ldots, n_{ij}$.  The function $K_{ijk}(r)$ is constructed
 (estimated) from an observed point pattern $X_{ijk}$.
 
-The observations have associated \emph{weights}.  The weight associated
-with $K_{ij}(r)$, in the single classification context, is $w_{ij} = m_{ij}^{\eta}$
-where $m_{ij}$ is the number of points in the pattern $X_{ij}$
-The exponent $\eta$ is a constant that may be specified by the
-user of the \texttt{kanova} package.  In the code $\eta$ is denoted
-by \texttt{expo}, and defaults to 2.
+Initially it seemed expedient to allow the observations to have
+associated \emph{weights}.  In the single classification context
+the weight associated with $K_{ij}(r)$ was specified to be $w_{ij}
+= m_{ij}^{\eta}$ where $m_{ij}$ is the number of points in the
+pattern $X_{ij}$.  In the context of two classification factors,
+the weight associated with $K_{ijk}(r)$ was specified to be $w_{ijk}
+= m_{ijk}^{\eta}$ where $m_{ijk}$ is the number of points in the
+pattern $X_{ijk}$.  The exponent $\eta$ was taken to be a constant,
+to be specified by the user of the \texttt{kanova} package.  In the
+code $\eta$ is denoted by \texttt{expo}.
 
-In the context of two classification factors, the weight associated
-with $K_{ijk}(r)$ is $w_{ijk} = m_{ijk}^{\eta}$ where $m_{ijk}$
-is the number of points in the pattern $X_{ijk}$.
+After the package was completed, simulation experiments revealed that
+the use of weights appears to be counter-productive.  The power of
+the tests in questions seems to be maximised when all the weights
+are 1, i.e. when $\eta$ (\texttt{expo}) is 0.  More importantly,
+the null distribution of the $p$-values of the tests appears to
+deviate from the theoretical ideal, i.e. the $U[0,1]$ distribution,
+unless the value of \texttt{expo} is 0.  Hence the tests are valid
+\emph{only} if \texttt{expo = 0}.  (More detail will be available
+in \cite{DiggleTurner2025}.)
 
-The test statistics used are calculated in terms of various weighted
-means of the observed $K$-functions.  Explicitly we define
+The code of the package was designed so as to do all of the
+relevant calculations in terms of the aforementioned weights.
+To keep life simple (and to allow for the remote possibility that
+in some circumstances the use of weights might be called for) the
+code (and the forthcoming exposition in this vignette) have been
+left expressed in terms of weights.  However the default value of
+\texttt{expo} has been set equal to 0.  Hence, unless the user
+takes explicit action to change the value of \texttt{expo} from
+its default, all of the computations will actually will actually
+be carried out in an un-weighted manner.
+
+\section{Some details about the weighted means of the observations}
+\label{sec:wtdMeans}
+
+The test statistics used are (in general) calculated in terms of
+various weighted means of the observed $K$-functions.  Explicitly
+we define:
 \begin{align*}
 \tilde{K}_{i\pt}(r)      &= \frac{1}{w_{i\pt}} \sum_{j=1}^{n_i} w_{ij} K_{ij}(r)\\
 \tilde{K}_{\pt\pt}(r)    &= \frac{1}{w_{\pt\pt}} \sum_{i=1}^a
@@ -96,82 +122,93 @@ means of the observed $K$-functions.  Explicitly we define
                  \frac{w_{ijk}}{w_{\pt \pt \pt}} K_{ijk}(r)
 \end{align*}
 
-\section{Variance functions}
+\section{Estimating the variance functions}
+\label{sec:estvarfns}
+
 The variances of the $K$-functions are assumed to be proportional
 to functions which are constant over indices within each cell
 of the model.  In the context of a single classification factor,
 the variance of $K_{ij}(r)$ is taken to be $\sigma_i^2(r)/w_{ij}$.
-
-It is assumed that under the null hypothesis of ``no A effect'',
+Under the null hypothesis of ``no A effect'', it is assumed that
 the functions $\sigma_i^2(r)$ are all equal to a single function,
-$\sigma^2(r)$.  I.e. they do not vary with $i$.
-
-In the context of two classification factors, the variance of
-$K_{ijk}(r)$ is taken to be $\sigma_{ij}^2(r)/w_{ijk}$.
-
-It is assumed that under the null hypothesis of ``no A effect'',
-the functions $\sigma_{ij}^2(r)$ do not vary with $i$, and for
-each $j$ are all equal to a single function $\sigma_j^2(r)$.
-
-\section{Estimating the variance functions}
-
-In the setting of a single classification factor, the variance function
-(unique under the null hypothesis), $\sigma^2(r)$ is estimated by
+$\sigma^2(r)$.  I.e. they do not vary with $i$.  This function is
+estimated by
 \[
 s^2(r) = \frac{1}{n_{\pt} - a} \sum_{i=1}^a \sum_{j=1}^{n_i}
          w_{ij}(K_{ij}(r) - \tilde{K}_{i\pt}(r))^2 \; .
 \]
-Under the null hypothesis this is an unbiased estimate of $\sigma^2(r)$.
+Under the null hypothesisi, this is an unbiased estimate of $\sigma^2(r)$.
 
-In the setting of two classification factors, where we are testing
-for an A effect, allowing for a B effect, the variance functions
-(depending only on the B effect under the null hypothesis),
+In the context of two classification factors, the variance of
+$K_{ijk}(r)$ is taken to be $\sigma_{ij}^2(r)/w_{ijk}$.  If we
+are testing for an A effect, allowing for a B effect, it is assumed
+that, under the null hypothesis, the functions $\sigma_{ij}^2(r)$
+do not vary with $i$, and for each $j$ are all equal to a single
+function $\sigma_j^2(r)$ (depending only on the B effect).  These
 $\sigma^2_j(r)$) are estimated by
 \[
 s^2_j(r) = \frac{1}{n_{\pt j}} \sum_{i=1}^a \sum_{k=1}^{n_{ij}}
                                w_{ijk}(K_{ijk}(r) - \tilde{K}_{ij\pt}(r))^2 \; .
 \]
-Under the null hypothesis these are a unbiased estimates of the $\sigma^2_j(r)$.
+Under the null hypothesis these are unbiased estimates of the $\sigma^2_j(r)$.
 
-In the setting of two classification factors, where we are testing for
+In the context of two classification factors, where we are testing for
 interaction against an additive model (unlikely to arise as these circumstances
 may be) we need estimates of $\sigma^2_{ij}(r)$.  These are given by
 \[
 s^2_{ij}(r) = \frac{1}{n_{ij} - 1} \sum_{k=1}^{n_{ij}} w_{ijk}(K_{ijk}(r)
                                             - \tilde{K}_{ij\pt})^2 \; .
 \]
-These are a unbiased estimates of the $\sigma^2_{ij}(r)$.
+These are unbiased estimates of the $\sigma^2_{ij}(r)$.
 
 \section{The test statistics}
+\label{sec:teststats}
+
+The test statistics are (numerical) integrals of certain sums
+of squares, possibly divided by ``standardisation coefficients''.
+The ``standardisation'' is analogous to the studentisation procedure
+used by \cite{Hahn2012}.
+
+\subsection{Single classification factor}
+\label{sec:teststats.scf}
+
 In the setting of a single classification factor A, the statistic
 for testing for an A effect is
 \[
 T = \sum_{i=1}^a n_i \int_{r_0}^{r_1} (\tilde{K}_i(r) - 
-                 \tilde{K}(r))^2/V_i(r) \; dr
+                 \tilde{K}(r))^2/\sco_i(r) \; dr
 \]
-where $V_i(r)$ is the estimated variance of $\tilde{K}_i(r) - \tilde{K}(r)$.
-This is given by
+where $\sco_i(r)$ is the standardisation coefficient.  If the
+\texttt{divByVar} argument of \texttt{kanova()} is \texttt{TRUE},
+then $\sco_i(r)$ is equal to the estimated variance of $\tilde{K}_i(r)
+- \tilde{K}(r)$ which is given by
 \[
-V_i(r) = s^2(r) \left ( \frac{1}{w_\ell \pt} - \frac{1}{w_{\pt \pt}} \right ) \; .
+s^2(r) \left ( \frac{1}{w_\ell \pt} - \frac{1}{w_{\pt \pt}} \right ) \; .
 \]
+If \texttt{divByVar} is \texttt{FALSE} then $\sco_i(r)$ is taken to
+be identically equal to 1.
 
+\subsection{Two classification factors, testing for A ``allowing for B''}
+\label{sec:teststats.testForA}
 In the setting of two classification factors A and B, the statistic
 for testing for an A effect allowing for a B effect is
 \[
 T_A = \sum_{i=1}^a n_{i \pt} \int_{r_0}^{r_1} (\tilde{K}_{i \pt}(r) -
-                 \tilde{K}(r))^2/V_{Ai}(r) \; dr
+                 \tilde{K}(r))^2/\sco_i(r) \; dr
 \]
-where $V_{Ai}(r)$ is the estimated variance of $\tilde{K}_{i \pt}(r) - \tilde{K}(r)$.
-This is given by
+where $\sco_i(r)$ is the standardisation coefficient.  If
+\texttt{divByVar} is \texttt{TRUE}, then $\sco_i(r)$ is equal
+to the estimated variance of $\tilde{K}_{i \pt}(r) - \tilde{K}(r)$
+which is given by
 \[
-V_{Ai}(r) = \tils_i^2(r) \left ( \frac{1}{w_{i \pt \pt}} - \frac{2}{w_{\pt \pt \pt}}
+\tils_i^2(r) \left ( \frac{1}{w_{i \pt \pt}} - \frac{2}{w_{\pt \pt \pt}}
                       \right ) + \frac{1}{w_{\pt \pt \pt}} \sum_{\ell=1}^a
                       \frac{w_{i \pt \pt}}{w_{\pt \pt \pt}} \tils_{\ell}^2(r) \; .
 \]
 The foregoing expression may be re-written, more compactly, and in a form which
 makes it more obvious that the quantity is positive, as:
 \[
-V_{Ai}(r) = \frac{1}{w_{\pt \pt \pt}} \left [
+\sco_i(r) = \frac{1}{w_{\pt \pt \pt}} \left [
             \sum_{\ell=1}^a \zeta_{i \ell} \times \tils^2_{\ell}(r) \right ]
 \]
 where
@@ -185,22 +222,31 @@ where
 \nu_{\ell} &= \frac{w_{\ell \pt \pt}}{w_{\pt \pt \pt}}, \;
 \ell = 1, \ldots, a.
 \end{align*}
+If \texttt{divByVar} is \texttt{FALSE} then $\sco_i(r)$ is taken to
+be identically equal to 1.
 
-In the setting in which there are two classification factors and we are
-testing for interaction, against an additive models, the test statistic is
+\subsection{Two classification factors, testing for interaction}
+\label{sec:teststats.testForInterac}
+
+In the setting in which there are two classification factors and
+we are testing for interaction, against an additive models, the
+test statistic is
 \[
 T_{AB} = \sum_{i=1}^a \sum_{j=1}^b n_{ij} \int_{r_0}^{r_1} (\tilde{K}_{ij \pt}(r) -
    \tilde{K}_{i \pt \pt}(r) - \tilde{K}_{\pt j \pt}(r) +
-   \tilde{K}(r))^2/V^{AB}_{ij}(r) \; dr
+   \tilde{K}(r))^2/\sco_{ij}(r) \; dr
 \]
-where $V^{AB}_{ij}(r)$ is the (sample) variance of $\tilde{K}_{ij}(r)
-- \tilde{K}_{i\pt}(r) - \tilde{K}_{\pt j}(r) + \tilde{K}(r)$.
-The function $V^{AB}_{ij}(r)$ is even messier than $V^A_i(r)$.
+where $\sco_{ij}(r)$ is the standardisation coefficient.  If
+\texttt{divByVar} is \texttt{TRUE}, then $\sco_{ij}(r)$ is equal to
+the (sample) variance of $\tilde{K}_{ij}(r) - \tilde{K}_{i\pt}(r)
+- \tilde{K}_{\pt j}(r) + \tilde{K}(r)$.  The expression for
+$\sco_{ij}(r)$, when \texttt{divByVar} is \texttt{TRUE}, is
+even messier than the corresponding expression for $\sco_{i}(r)$.
 It is given by
 \begin{equation}
 \label{eq:sampvarSSR}
 \begin{split}
-V^{AB}_{ij}(r) = s_{ij}^2(r) &\left ( \frac{1}{w_{i j \pt}} -
+s_{ij}^2(r) &\left ( \frac{1}{w_{i j \pt}} -
                                       \frac{2}{w_{i \pt \pt}} -
                                       \frac{2}{w_{\pt j \pt}} +
                                       \frac{2w_{ij \pt}}{w_{i \pt \pt} w_{\pt j \pt}} +

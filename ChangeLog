@@ -502,14 +502,14 @@ Version 0.3-3.
 Fixed egregious bugs in buildV.R:
 
 --- added a missing 2/sum(wtm) in mult1
---- got rid of spurious factor of sum(wtm[i,]) in mutl2
---- got rid of spurious factor of sum(wtm[,j]) in mutl3
+--- got rid of spurious factor of sum(wtm[i,]) in mult2
+--- got rid of spurious factor of sum(wtm[,j]) in mult3
 
 Also got rid of spurious "+" at the beginning of the second
 line of the mult1 code (although it did not seem to do any
 real harm.  But note that getting rid of the "+" at the end
 of the first line of the mult2 code *really* fucks things up
-(since then the first line is syntactically completen whence
+(since then the first line is syntactically complete, whence
 the second line is ignored:
 
         mult1 <- 1/wtm[i,j] - 2/sum(wtm[i,]) - 2/sum(wtm[,j])+
@@ -603,3 +603,80 @@ errors get thrown if the required package is not available.
 
 Incremented the version number.
 Version 0.3-12.
+
+29/03/2025
+
+Added an argument standardise=TRUE to kanova(), to permit assessment
+of the impact of standardisation on the power of the test.
+
+Incremented the version number.
+Version 0.3-13.
+
+20/04/2025
+
+After much mucking around with the impact of standardise=FALSE,
+I decided I had been making a huge conceptual error in respect
+of the structure of the "permuted residuals" and decided to change
+this.
+
+21--23/04/2025
+
+Corrected comments in estSigsq.R; tidied up use of the "satMod"
+argument.
+
+Put in an (unnecessary!) precaution in kanova(), guarding against
+npreds==0.
+
+Amended permSumFns.R to guard against zero standard deviations when
+standardising the residuals.
+
+In the Engines, got rid of the "unsquared" M (and of M1 = the
+old M, squared) and turned M into the matrix of squared terms.
+
+Removed the "V <- 1" when standardise is FALSE; just set MoV = M
+in this case.
+
+04/05/2025
+
+Changed the name of the argument "standardise" of kanova()
+to "divByVar".  The "standardise" idea is too easy to confuse
+with the standardisation of residuals (used in permSumFns().
+Revised the functions called by kanova() u.s.w.  Revised the help
+files accordingly.  Revised the vignette accordingly.
+
+06/05/2025
+Did some more cleaning up w.r.t. the "standardise" to "divByVar"
+change
+
+Incremented the version number.
+Version 0.3-14.
+
+07-09/05/2025
+Fixed a colnames problem in resAndFit.R (made dimnames(rez)
+explicit).
+Added "Anm" and "Bnm" to the attributes of the value returned
+by initprep().
+Tidied up the comments in permSumFns.R
+Added error trap in estSigsq() to detect occurrences of cells with
+too few (single) entries in the twoway setting.  Such occurrencers
+lead to infinite variance estimates.
+
+Package built and checked.
+
+Incremented the version number.
+Version 0.3-15.
+
+11/05/2025
+
+Changed default value of "expo" to 1 (from 2).
+
+Incremented the version number.
+Version 0.3-16.
+
+15/05/2025
+
+Revised the vignette to take account of the fact that
+weighting the observations is no longed considered advisable.
+
+Incremented the version number.
+Version 0.3-17.
