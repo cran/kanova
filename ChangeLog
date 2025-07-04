@@ -680,3 +680,12 @@ weighting the observations is no longed considered advisable.
 
 Incremented the version number.
 Version 0.3-17.
+
+04/07/2025
+Changed the "Title" field in the DESCRIPTION file.
+Adjusted and corrected the vignette.
+
+Incremented the version number.
+Version 0.3-18.
+
+Submitted to CRAN.

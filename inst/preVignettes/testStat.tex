@@ -18,22 +18,25 @@
 
 \section{Introduction}
 \label{sec:intro}
-This note presents in some detail the formulae for the test statistics
-used by the \texttt{kanova()} function from the \texttt{kanova}
-package.  These statistics are based on, and generalise, the
-ideas discussed in \cite{DiggleEtAl2000} and in \cite{Hahn2012}.
-They consist of sums of integrals (over the argument $r$ of the
-$K$-function) of the usual sort of analysis of variance ``regression'' sums of
-squares, down-weighted over $r$ by the estimated variance of the
-quantities being squared.  The limits of integration $r_0$ and $r_1$
-\emph{could} be specified in the software (e.g. in the related
-\texttt{spatstat} function \texttt{studpermu.test()} they can be
-specified in the argument \texttt{rinterval}).  However there is
-currently no provision for this in \texttt{kanova()}, and $r_0$ and
-$r_1$ are taken to be the min and max of the $r$ component of the
-\texttt{"fv"} object returned by \texttt{Kest()}.   Usually $r_0$
-is 0 and $r_1$ is $1/4$ of the length of the shorter side of the
-bounding box of the observation window in question.
+This note presents in some detail the formulae for the test
+statistics used by the \texttt{kanova()} function from the
+\texttt{kanova} package.  These statistics are based on, and
+generalise, the ideas discussed in \cite{DiggleEtAl2000} and in
+\cite{Hahn2012}.  (See also \cite{DiggleEtAl1991}.)
+
+The statistics consist of sums of integrals (over the argument $r$
+of the $K$-function) of the usual sort of analysis of variance
+``regression'' sums of squares, down-weighted over $r$ by the
+estimated variance of the quantities being squared.  The limits
+of integration $r_0$ and $r_1$ \emph{could} be specified in
+the software (e.g. in the related \texttt{spatstat} function
+\texttt{studpermu.test()} they can be specified in the argument
+\texttt{rinterval}).  However there is currently no provision
+for this in \texttt{kanova()}, and $r_0$ and $r_1$ are taken
+to be the min and max of the $r$ component of the \texttt{"fv"}
+object returned by \texttt{Kest()}.   Usually $r_0$ is 0 and $r_1$
+is $1/4$ of the length of the shorter side of the bounding box of
+the observation window in question.
 
 There are test statistics for:
 \begin{itemize}
@@ -55,24 +58,53 @@ $K$-functions $K_{ijk}(r)$, $i = 1, \ldots, a$, $j = 1, \ldots, b$,
 $k = 1, \ldots, n_{ij}$.  The function $K_{ijk}(r)$ is constructed
 (estimated) from an observed point pattern $X_{ijk}$.
 
-Initially it seemed expedient to allow the observations to have
-associated \emph{weights}.  In the single classification context
-the weight associated with $K_{ij}(r)$ was specified to be $w_{ij}
-= m_{ij}^{\eta}$ where $m_{ij}$ is the number of points in the
-pattern $X_{ij}$.  In the context of two classification factors,
-the weight associated with $K_{ijk}(r)$ was specified to be $w_{ijk}
-= m_{ijk}^{\eta}$ where $m_{ijk}$ is the number of points in the
-pattern $X_{ijk}$.  The exponent $\eta$ was taken to be a constant,
-to be specified by the user of the \texttt{kanova} package.  In the
-code $\eta$ is denoted by \texttt{expo}.
+\subsection{Modelling heteroscedasticity}
+\label{sec:heteroMod}
 
-After the package was completed, simulation experiments revealed that
-the use of weights appears to be counter-productive.  The power of
-the tests in questions seems to be maximised when all the weights
-are 1, i.e. when $\eta$ (\texttt{expo}) is 0.  More importantly,
-the null distribution of the $p$-values of the tests appears to
-deviate from the theoretical ideal, i.e. the $U[0,1]$ distribution,
-unless the value of \texttt{expo} is 0.  Hence the tests are valid
+In order to model the variances of the $K$-functions that appear
+in the current context, we need to make the following simplifying
+assumptions about of the nature of these variances:
+\begin{enumerate}
+\item with each cell of the model there is associated an underlying
+variance function denoted by $\sigma_i^2(r)$ ($i = 1, \ldots, a$)
+in the case of a one way design, and by $\sigma_{ij}^2(r)$ ($i =
+1, \ldots, a$, $j = 1, \ldots, b$) in the case of a two way design
+
+\item with each observed pattern there is associated a (positive)
+weight, depending on the number of points in the pattern and denoted
+by $w_{ij}$ in the case of a one way design and by $w_{ijk}$ in
+the case of a two way design
+\end{enumerate}
+
+In terms of these assumptions, we assume that the variances of the
+$K$-functions are given by:
+\begin{align*}
+\Var(K_{ij})(r) &= \sigma_i^2(r)/w_{ij} \mbox{~for a one way design}\\
+\Var(K_{ijk})(r) &= \sigma_{ij}^2(r)/w_{ijk} \mbox{~for a two way design}
+\end{align*}
+This model has no theoretical basis and is justified only
+by its simplicity and intuitive appeal.
+
+In the single classification context the weight associated
+with $K_{ij}(r)$ is specified to be $w_{ij} = m_{ij}^{\eta}$
+where $m_{ij}$ is the number of points in the pattern $X_{ij}$.
+In the context of two classification factors, the weight associated
+with $K_{ijk}(r)$ is specified to be $w_{ijk} = m_{ijk}^{\eta}$
+where $m_{ijk}$ is the number of points in the pattern $X_{ijk}$.
+The exponent $\eta$ is taken to be a constant, to be specified
+by the user of the \texttt{kanova} package.  In the code $\eta$
+is denoted by \texttt{expo}.
+
+\subsection{Homoscedasticity is better}
+
+After the package was completed, simulation experiments revealed
+that expressing the variances in terms of the proposed weights
+appears to be counter-productive.  The power of the tests in
+questions seems to be maximised when all the weights are 1,
+i.e. when $\eta$ (\texttt{expo}) is 0.  More importantly, the null
+distribution of the $p$-values of the tests appears to deviate from
+the theoretical ideal, i.e. the $U[0,1]$ distribution, unless the
+value of \texttt{expo} is 0.  Hence the tests appear to be valid
 \emph{only} if \texttt{expo = 0}.  (More detail will be available
 in \cite{DiggleTurner2025}.)
 
@@ -81,11 +113,11 @@ relevant calculations in terms of the aforementioned weights.
 To keep life simple (and to allow for the remote possibility that
 in some circumstances the use of weights might be called for) the
 code (and the forthcoming exposition in this vignette) have been
-left expressed in terms of weights.  However the default value of
-\texttt{expo} has been set equal to 0.  Hence, unless the user
-takes explicit action to change the value of \texttt{expo} from
-its default, all of the computations will actually will actually
-be carried out in an un-weighted manner.
+left expressed in terms of weights.  However the default value
+of \texttt{expo} has been set equal to 0.  Hence, unless the user
+explicitly changes the value of \texttt{expo} from its default, all
+of the computations will actually be carried out in an un-weighted
+manner.  I.e. the data will be treated as being homoscedastic.
 
 \section{Some details about the weighted means of the observations}
 \label{sec:wtdMeans}
@@ -103,7 +135,7 @@ we define:
                             \frac{w_{ijk}}{w_{ij \pt}} K_{ijk}(r) \\
 \tilde{K}_{i \pt \pt}(r)
               &= \sum_{j=1}^{b} \frac{w_{ij \pt}}{w_{i \pt \pt}}
-                   \tilde{K}_{ij \pt}(r) \\ \displaybreak
+                   \tilde{K}_{ij \pt}(r) \\
               &= \frac{1}{w_{i \pt \pt}} \sum_{j=1}^{b}
                           \sum_{k=1}^{n_{ij}} w_{ijk} K_{ijk}(r) \\
 \tilde{K}_{\pt j \pt}(r)
@@ -131,26 +163,26 @@ of the model.  In the context of a single classification factor,
 the variance of $K_{ij}(r)$ is taken to be $\sigma_i^2(r)/w_{ij}$.
 Under the null hypothesis of ``no A effect'', it is assumed that
 the functions $\sigma_i^2(r)$ are all equal to a single function,
-$\sigma^2(r)$.  I.e. they do not vary with $i$.  This function is
+$\tilde{\sigma}^2(r)$.  I.e. they do not vary with $i$.  This function is
 estimated by
 \[
 s^2(r) = \frac{1}{n_{\pt} - a} \sum_{i=1}^a \sum_{j=1}^{n_i}
          w_{ij}(K_{ij}(r) - \tilde{K}_{i\pt}(r))^2 \; .
 \]
-Under the null hypothesisi, this is an unbiased estimate of $\sigma^2(r)$.
+Under the null hypothesisi, this is an unbiased estimate of $\tilde{\sigma}^2(r)$.
 
 In the context of two classification factors, the variance of
 $K_{ijk}(r)$ is taken to be $\sigma_{ij}^2(r)/w_{ijk}$.  If we
 are testing for an A effect, allowing for a B effect, it is assumed
 that, under the null hypothesis, the functions $\sigma_{ij}^2(r)$
 do not vary with $i$, and for each $j$ are all equal to a single
-function $\sigma_j^2(r)$ (depending only on the B effect).  These
-$\sigma^2_j(r)$) are estimated by
+function $\tilde{\sigma}_j^2(r)$ (depending only on the B effect).  These
+$\tilde{\sigma}^2_j(r)$) are estimated by
 \[
 s^2_j(r) = \frac{1}{n_{\pt j}} \sum_{i=1}^a \sum_{k=1}^{n_{ij}}
                                w_{ijk}(K_{ijk}(r) - \tilde{K}_{ij\pt}(r))^2 \; .
 \]
-Under the null hypothesis these are unbiased estimates of the $\sigma^2_j(r)$.
+Under the null hypothesis these are unbiased estimates of the $\tilde{\sigma}^2_j(r)$.
 
 In the context of two classification factors, where we are testing for
 interaction against an additive model (unlikely to arise as these circumstances
@@ -164,10 +196,10 @@ These are unbiased estimates of the $\sigma^2_{ij}(r)$.
 \section{The test statistics}
 \label{sec:teststats}
 
-The test statistics are (numerical) integrals of certain sums
-of squares, possibly divided by ``standardisation coefficients''.
-The ``standardisation'' is analogous to the studentisation procedure
-used by \cite{Hahn2012}.
+The test statistics are (numerical) integrals of certain sums of
+squares, possibly divided by ``normalisation" or ``homogenisation''
+coefficients.  The ``normalisation" is analogous to the
+studentisation procedure used by \cite{Hahn2012}.
 
 \subsection{Single classification factor}
 \label{sec:teststats.scf}
@@ -178,7 +210,7 @@ for testing for an A effect is
 T = \sum_{i=1}^a n_i \int_{r_0}^{r_1} (\tilde{K}_i(r) - 
                  \tilde{K}(r))^2/\sco_i(r) \; dr
 \]
-where $\sco_i(r)$ is the standardisation coefficient.  If the
+where $\sco_i(r)$ is the normalisation coefficient.  If the
 \texttt{divByVar} argument of \texttt{kanova()} is \texttt{TRUE},
 then $\sco_i(r)$ is equal to the estimated variance of $\tilde{K}_i(r)
 - \tilde{K}(r)$ which is given by
@@ -196,7 +228,7 @@ for testing for an A effect allowing for a B effect is
 T_A = \sum_{i=1}^a n_{i \pt} \int_{r_0}^{r_1} (\tilde{K}_{i \pt}(r) -
                  \tilde{K}(r))^2/\sco_i(r) \; dr
 \]
-where $\sco_i(r)$ is the standardisation coefficient.  If
+where $\sco_i(r)$ is the normalisation coefficient.  If
 \texttt{divByVar} is \texttt{TRUE}, then $\sco_i(r)$ is equal
 to the estimated variance of $\tilde{K}_{i \pt}(r) - \tilde{K}(r)$
 which is given by
@@ -236,7 +268,7 @@ T_{AB} = \sum_{i=1}^a \sum_{j=1}^b n_{ij} \int_{r_0}^{r_1} (\tilde{K}_{ij \pt}(r
    \tilde{K}_{i \pt \pt}(r) - \tilde{K}_{\pt j \pt}(r) +
    \tilde{K}(r))^2/\sco_{ij}(r) \; dr
 \]
-where $\sco_{ij}(r)$ is the standardisation coefficient.  If
+where $\sco_{ij}(r)$ is the normalisation coefficient.  If
 \texttt{divByVar} is \texttt{TRUE}, then $\sco_{ij}(r)$ is equal to
 the (sample) variance of $\tilde{K}_{ij}(r) - \tilde{K}_{i\pt}(r)
 - \tilde{K}_{\pt j}(r) + \tilde{K}(r)$.  The expression for

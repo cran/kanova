@@ -1,4 +1,4 @@
-\begin{thebibliography}{3}
+\begin{thebibliography}{4}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -16,6 +16,13 @@ Peter~J. Diggle, Jorge Mateu, and Helen~E. Clough.
   analysis of replicated spatial point patterns.
 \newblock \emph{Advances in Applied Probability}, 32:\penalty0 331 -- 343,
   2000.
+
+\bibitem[Diggle et~al.(1991)Diggle, Lange, and Benes]{DiggleEtAl1991}
+P.J. Diggle, N.~Lange, and F.M. Benes.
+\newblock Analysis of variance for replicated spatial point patterns in
+  clinical neuroanatomy.
+\newblock \emph{Journal of the American Statistical Association}, 86:\penalty0
+  618 -- 625, 1991.
 
 \bibitem[Hahn(2012)]{Hahn2012}
 Ute Hahn.
