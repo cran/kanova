@@ -46,7 +46,7 @@ There are test statistics for:
 context.
 \end{itemize}
 
-\section{The data}.
+\section{The data}
 In the context of a single classification factor A, with $a$ levels,
 the data consist of $K$-functions $K_{ij}(r)$, $i = 1, \ldots,
 a$, $k = 1, \ldots, n_i$.  The function $K_{ij}(r)$ is constructed
@@ -215,7 +215,7 @@ where $\sco_i(r)$ is the normalisation coefficient.  If the
 then $\sco_i(r)$ is equal to the estimated variance of $\tilde{K}_i(r)
 - \tilde{K}(r)$ which is given by
 \[
-s^2(r) \left ( \frac{1}{w_\ell \pt} - \frac{1}{w_{\pt \pt}} \right ) \; .
+s^2(r) \left ( \frac{1}{w_i \pt} - \frac{1}{w_{\pt \pt}} \right ) \; .
 \]
 If \texttt{divByVar} is \texttt{FALSE} then $\sco_i(r)$ is taken to
 be identically equal to 1.
@@ -225,12 +225,12 @@ be identically equal to 1.
 In the setting of two classification factors A and B, the statistic
 for testing for an A effect allowing for a B effect is
 \[
-T_A = \sum_{i=1}^a n_{i \pt} \int_{r_0}^{r_1} (\tilde{K}_{i \pt}(r) -
-                 \tilde{K}(r))^2/\sco_i(r) \; dr
+T_A = \sum_{i=1}^a n_{i \pt} \int_{r_0}^{r_1} (\tilde{K}_{i \pt \pt}(r) -
+                 \tilde{K}_{\pt \pt \pt}(r))^2/\sco_i(r) \; dr
 \]
 where $\sco_i(r)$ is the normalisation coefficient.  If
 \texttt{divByVar} is \texttt{TRUE}, then $\sco_i(r)$ is equal
-to the estimated variance of $\tilde{K}_{i \pt}(r) - \tilde{K}(r)$
+to the estimated variance of $\tilde{K}_{i \pt \pt}(r) - \tilde{K_{\pt \pt \pt}}(r)$
 which is given by
 \[
 \tils_i^2(r) \left ( \frac{1}{w_{i \pt \pt}} - \frac{2}{w_{\pt \pt \pt}}
@@ -266,12 +266,12 @@ test statistic is
 \[
 T_{AB} = \sum_{i=1}^a \sum_{j=1}^b n_{ij} \int_{r_0}^{r_1} (\tilde{K}_{ij \pt}(r) -
    \tilde{K}_{i \pt \pt}(r) - \tilde{K}_{\pt j \pt}(r) +
-   \tilde{K}(r))^2/\sco_{ij}(r) \; dr
+   \tilde{K}_{\pt \pt \pt}(r))^2/\sco_{ij}(r) \; dr
 \]
 where $\sco_{ij}(r)$ is the normalisation coefficient.  If
 \texttt{divByVar} is \texttt{TRUE}, then $\sco_{ij}(r)$ is equal to
-the (sample) variance of $\tilde{K}_{ij}(r) - \tilde{K}_{i\pt}(r)
-- \tilde{K}_{\pt j}(r) + \tilde{K}(r)$.  The expression for
+the (sample) variance of $\tilde{K}_{ij\pt}(r) - \tilde{K}_{i\pt \pt}(r)
+- \tilde{K}_{\pt j \pt}(r) + \tilde{K}_{\pt \pt \pt}(r)$.  The expression for
 $\sco_{ij}(r)$, when \texttt{divByVar} is \texttt{TRUE}, is
 even messier than the corresponding expression for $\sco_{i}(r)$.
 It is given by

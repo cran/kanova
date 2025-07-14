@@ -1,4 +1,4 @@
-kanova <- function(fmla,data,expo=1,rsteps=128,r=NULL,sumFnNm=NULL,
+kanova <- function(fmla,data,expo=0,rsteps=128,r=NULL,sumFnNm=NULL,
                    warnSFN=TRUE,test=TRUE,bylevel=FALSE,
                    permtype=c("stdres","data"),nperm=99,brief=TRUE,
                    verb=TRUE,keepdata=FALSE,divByVar=TRUE) {

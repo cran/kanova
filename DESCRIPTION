@@ -1,6 +1,6 @@
 Package: kanova
-Version: 0.3-18
-Date: 2025-07-04
+Version: 0.3-19
+Date: 2025-07-14
 Title: Quasi Analysis of Variance for K-Functions
 Authors@R: person(given = "Rolf",
                     family = "Turner",
@@ -19,6 +19,6 @@ LazyData: true
 Depends: R (>= 3.2.2)
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2025-07-04 03:01:46 UTC; rolf
+Packaged: 2025-07-14 02:08:49 UTC; rolf
 Repository: CRAN
-Date/Publication: 2025-07-04 03:20:02 UTC
+Date/Publication: 2025-07-14 03:00:02 UTC

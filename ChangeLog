@@ -689,3 +689,15 @@ Incremented the version number.
 Version 0.3-18.
 
 Submitted to CRAN.
+
+04/07/2025
+Changed the title field in the help file kanova.Rd, to use "Quasi"
+r.t. "Pseudo".
+
+Corrected some more typos (changing K_{i.} to K_{i..}, and similarly)
+in the vignette.
+
+14/07/2025
+
+Fixed glitch in kanova() --- expo had wrong default.
+Adjusted/repaired some wording in kanova.Rd

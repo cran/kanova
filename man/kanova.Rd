@@ -1,10 +1,10 @@
 \name{kanova}
 \alias{kanova}
 \title{
-    Pseudo analysis of variance of K-functions
+    Quasi analysis of variance for K-functions
 }
 \description{
-    One-way and two-way pseudo analysis of variance for replicated
+    One-way and two-way quasi analysis of variance for replicated
     point patterns, grouped by one or two classification factors.
     The analysis is based on the values of a summary function.
     This summary function may be specified by the user.  It is
@@ -12,7 +12,7 @@
     the K-function, which is the default.
 }
 \usage{
-    kanova(fmla,data,expo=1,rsteps=128,r=NULL,sumFnNm=NULL,
+    kanova(fmla,data,expo=0,rsteps=128,r=NULL,sumFnNm=NULL,
            warnSFN=TRUE,test=TRUE,bylevel=FALSE,
            permtype=c("stdres","data"),nperm=99,brief=TRUE,verb=TRUE,
            keepdata=FALSE,divByVar=TRUE)
@@ -51,7 +51,7 @@
 
   If the response consists of numeric vectors, and if these vectors
   are \emph{not} scalars, then \code{data} must have an attribute
-  \code{"r"}  which specifies the \dQuote{argument} of the pseudo
+  \code{"r"}  which specifies the \dQuote{argument} of the putative
   summary functions in the list.  This attribute should be a
   numeric vector and must be of the same length as the numeric
   vectors in the list.  If the response functions are scalars,
@@ -75,10 +75,10 @@
   \item{expo}{Non-negative numeric scalar.  Ignored unless the
   response is a list of point patterns.  Statistics in \code{kanova}
   are in general calculated using \emph{weighted} means and in this
-  context the weights are the counts of points in
-  the patterns, raised to the power \code{expo}.  To use unweighted
-  means, set \code{expo=0}.  If \code{expo} is equal to \code{1}
-  then the weights are simply the pattern counts.
+  context the weights are the counts of points in the patterns,
+  raised to the power \code{expo}.  Unweighteb means are used when
+  \code{expo} is equal to 0, the default.  If \code{expo} is set
+  equal to \code{1} then the weights are simply the pattern counts.
 }
   \item{rsteps}{Integer scalar.  Ignored if argument \code{r}
   (see below) is supplied (i.e. is not \code{NULL}), or if the
@@ -215,9 +215,9 @@
   the form \code{y ~ A + B}.  In this setting, if \code{permtype}
   is \code{"data"}, the factor B is ``allowed for'' by permuting
   the data \emph{within} the levels of B.  If \code{permtype}
-  is \code{"stdres"}) the standardised residuals are permuted.
+  is \code{"stdres"}, the standardised residuals are permuted.
   These are residuals from the saturated model, which includes a
-  B effect which \dQuote{allows for} B.
+  B effect, thereby \dQuote{allowing for} B.
   }
   \item{integration:}{
   \eqn{~}\cr
@@ -237,8 +237,8 @@
   The \code{divByVar} argument exists essentially to allow the
   package developers to conduct certain simulation experiments.
   In normal circumstances the user would not set the value of
-  this argument (i.e. would leave the value of this argument as
-  \code{TRUE}).
+  this argument (i.e. would let the value of this argument retain
+  its default value of \code{TRUE}).
 
   If the argument \code{divByVar} is \code{TRUE}, then the sums
   of squares, from which the test statistic is formed, are are
@@ -251,10 +251,9 @@
   The quantities that are involved in the sums of squares are
   formed from certain \dQuote{fitted values} which are weighted
   means of the observations (observed values of summary functions).
-  The variance referred to is formed as a weighted mean of squares
-  of the residuals, which are of course equal to the observations
-  minus the fitted values.
-
+  The variance referred to is formed as an expression involving
+  weighted means of squares of the residuals.  These residuals are
+  of course equal to the observations minus the fitted values.
   }
   \item{more detail:}{
   \eqn{~}\cr
@@ -284,11 +283,11 @@
   Users should ignore this advice \emph{only} if they have a sound
   reason for doing so and a sound understanding of the consequences.
 
-  \item Only one-way and two-way (pseudo) analyses of variance
+  \item Only one-way and two-way (quasi) analyses of variance
   are accommodated.  If you feel inclined to ask why there is no
   provision for higher order analysis of variance, just look at
   the code and the answer should be obvious.  It \emph{might} be
-  possible to implement higher order pseudo analysis of variance of
+  possible to implement higher order quasi analysis of variance of
   summary functions, but this is unlikely to have any practical use.
   Writing the code would, for me, be a nightmare!
   }
@@ -300,7 +299,7 @@
    If \code{keepdata} is \code{TRUE} then the object in question
    (of class \code{"multi.kanova"}) has an
    attribute \code{"data"}.  This is equal to the \code{data}
-   argument, possibly having been augmented by the value of the second
+   argument, possibly augmented by the value of the second
    predictor in the model if this predictor was not found in the
    original \code{data} and was located in the parent frame.
 
@@ -311,7 +310,7 @@
    \code{data} object is returned as an \emph{attribute} of the
    \code{"multi.kanova"} object.
 
-   If \code{test} is \code{TRUE} then the \code{"multi.kanova}"}
+   If \code{test} is \code{TRUE} then the \code{"multi.kanova"}
    object returned has an attribute named \code{"oapv"}
    (\dQuote{overall \eqn{p}-value}).  This is calculated as \code{1 -
    (1 - pvmin)^b} where \code{pvmin} is the minimum of the \code{b}
