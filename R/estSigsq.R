@@ -27,18 +27,21 @@ rslt <- switch(EXPR=type,
     twoway={
         A   <- attr(sumFns,"A")
         B   <- attr(sumFns,"B")
-        xxx <- split(sumFns,f=B)
-        asv <- split(A,f=B)[[1]]
-        knt <- table(asv)
+        knt <- table(A,B)
         if(any(knt <= 1)) {
-             Anm <- attr(sumFns,"Anm")
-             iii <- which(knt <= 1)
-             badlev <- paste(levels(asv)[iii],collapse=" ")
-             whinge <- paste0("Levels ",badlev," of factor ",Anm," have too few\n",
+             iii <- which(knt <= 1,arr.ind=TRUE)
+             badcells <- apply(iii,1,paste,collapse=",")
+             badcells <- paste0("(",badcells)
+             badcells <- paste0(badcells,")")
+             badcells <- paste(badcells,collapse=", ")
+             whinge <- paste0("Cells ",badcells," of the model have too few\n",
                               "  observations for variances to be calculated.\n")
              stop(whinge)
         }
-        yyy <- lapply(xxx,function(x,f){split(x,f=f)},f=asv) 
+        xxx <- split(sumFns,f=B)
+        asv <- split(A,f=B)
+        yyy <- lapply(1:length(xxx),function(k,x,f){split(x[[k]],f=f[[k]])},
+                      x=xxx,f=asv) 
         zzz <- lapply(yyy,function(y){lapply(y,wtdSS)})
         lapply(zzz,function(z){
                       ens  <- sapply(z,function(v){attr(v,"n")})
@@ -51,7 +54,7 @@ rslt <- switch(EXPR=type,
         AB  <- attr(sumFns,"AB")
         xxx <- split(sumFns,f=AB)
         zzz <- lapply(xxx,wtdSS)
-        sss <- lapply(zzz,function(z){z/(attr(z,"n")-1)})
+        lapply(zzz,function(z){z/(attr(z,"n")-1)})
     })
 rslt
 }

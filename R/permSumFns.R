@@ -66,10 +66,15 @@ permSumFns <- function(sumFns,rAndF,permtype) {
             prez <- prez[ip]
             psF  <- lapply(1:N,function(k,fv,sd,w,prez){
                                sdloc <- sd[[names(fv)[k]]]
-                               fvstar <- fv[[k]] + sdloc**prez[[k]]
+                               fvstar <- fv[[k]] + sdloc*prez[[k]]
                                attr(fvstar,"weight") <- w[k]
                                fvstar
                                },fv=fV,sd=sdok,w=wts,prez=prez)
+            junk  <- sapply(1:N,function(k,fv,sd,w,prez){
+                               sdloc <- sd[[names(fv)[k]]]
+                               mean(fv[[k]] + sdloc*prez[[k]])
+                               },fv=fV,sd=sdok,w=wts,prez=prez)
+            crap <- sapply(fV,mean)
        }
     }
     attributes(psF) <- attributes(sumFns)

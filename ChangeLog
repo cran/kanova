@@ -701,3 +701,28 @@ in the vignette.
 
 Fixed glitch in kanova() --- expo had wrong default.
 Adjusted/repaired some wording in kanova.Rd
+
+Fixed error in vignette --- reference to Diggle-Turner 2025
+had title wrong.
+
+Incremented the version number.
+Version 0.3-19.
+
+
+17/07/2025
+
+Fixed typo in the vignette --- index k should have been j; line 2,
+first para. of Section 2 ("The data").  Drawn to my attention by
+Benjamin Tyner.
+
+19/08/2025
+
+Fixed a couple of egregious bugs:
+
+(1) In permSumFns.R, the expression "fvstar <- fv[[k]] + sdloc**prez[[k]]"
+    should have been "fvstar <- fv[[k]] + sdloc*prez[[k]]" !!!
+    (The double "*" indicates exponentiation.)
+
+(2) The dimensions of s2ij in iEngine were incorrectly organised.
+
+These bugs made testing for interaction come out all wrong.

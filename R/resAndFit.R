@@ -45,6 +45,7 @@ switch(EXPR=type,
         names(fitz) <- nms
         AB    <- attr(sumFns,"AB")
         sfitz <- lapply(split(sumFns,f=AB),wtdMean) # saturated "fitz"
+junk <- sfitz
         sfitz <- reenlist(sfitz,f=AB)
         names(sfitz) <- AB
     }

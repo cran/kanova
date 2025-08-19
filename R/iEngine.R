@@ -15,7 +15,7 @@ if(divByVar) {
     nr     <- length(attr(sumFns,"r"))
     a      <- length(levels(A))
     b      <- length(levels(B))
-    s2ij   <- array(unlist(s2ij),dim=c(a,b,nr))
+    s2ij   <- aperm(array(unlist(s2ij),dim=c(nr,a,b)),c(2,3,1))
     wts    <- getWts(sumFns)
     wtm    <- matrix(sapply(split(wts,f=AB),sum),nrow=a,ncol=b)
     V      <- buildV(s2ij,wtm)

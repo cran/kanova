@@ -3,7 +3,6 @@ buildV <- function(s2ij,wtm){
     b  <- ncol(wtm)
     nr <- dim(s2ij)[3]
     V  <- array(NA,dim=dim(s2ij))
-    U  <- array(NA,dim=c(6,3,4))
     Wi <- wtm/apply(wtm,1,sum)
     Wj <- t(wtm)/apply(wtm,2,sum)
     Z  <- lapply(1:nr,function(k,a,b){a[,,k]*b},a=s2ij,b=wtm/sum(wtm))
